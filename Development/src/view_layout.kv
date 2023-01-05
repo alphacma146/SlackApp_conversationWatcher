@@ -1,0 +1,71 @@
+#:kivy 2.1.0
+<RootWidget>:
+    orientation: "vertical"
+
+    Label:
+        id: ver_label
+        size_hint: (1, 0.1)
+        text_size: self.size
+        padding: 5,10
+        halign: "right"
+        valign: "top"
+        text: root.ver_text
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint: (1, 0.2)
+        Spinner:
+            id: spinner
+            size_hint: (0.77, 1)
+            text: 'Home'
+            font_size: 27
+            values: "A","B","C"
+
+        Button:
+            id: new_button
+            size_hint: (0.23, 1)
+            text: "SET CHANNEL"
+            font_size: 18
+            on_press: None
+
+    ProgressBar:
+        id: progressbar
+        size_hint: (1, 0.1)
+        max: 100
+        value: 50
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint: (1, 0.3)
+
+        TextInput:
+            id: text1
+            size_hint: (0.5, 1)
+            line_height: 1
+            multiline: False
+            hint_text: 'input'
+
+        TextInput:
+            id: text1
+            size_hint: (0.5, 1)
+            line_height: 1
+            multiline: False
+            hint_text: 'input'
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint: (1, 0.3)
+
+        Button:
+            id: button1
+            size_hint: (0.5, 1)
+            text: "FETCH"
+            font_size: 37
+            on_press: root.on_command()
+
+        Button:
+            id: button1
+            size_hint: (0.5, 1)
+            text: "OUTPUT"
+            font_size: 37
+            on_press: root.on_command()
