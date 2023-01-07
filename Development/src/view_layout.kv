@@ -2,18 +2,28 @@
 <RootWidget>:
     orientation: "vertical"
 
-    Label:
-        id: ver_label
+    BoxLayout:
+        orientation: "horizontal"
         size_hint: (1, 0.1)
-        text_size: self.size
-        padding: 5,10
-        halign: "right"
-        valign: "top"
-        text: root.ver_text
+
+        Label:
+            size_hint: (0.8, 1)
+
+        Label:
+            id: ver_label
+            size_hint: (0.2, 1)
+            text_size: self.size
+            padding: 5,10
+            halign: "right"
+            valign: "top"
+            text: "[ref=None]"+root.ver_text+"[/ref]"
+            markup: True
+            on_ref_press: root.show_license()
 
     BoxLayout:
         orientation: "horizontal"
         size_hint: (1, 0.2)
+
         Spinner:
             id: spinner
             size_hint: (0.77, 1)
@@ -22,15 +32,15 @@
             values: "A","B","C"
 
         Button:
-            id: new_button
+            id: channelset_button
             size_hint: (0.23, 1)
             text: "SET CHANNEL"
             font_size: 18
-            on_press: None
+            on_press: root.show_channelset()
 
     ProgressBar:
         id: progressbar
-        size_hint: (1, 0.1)
+        size_hint: (1, 0.05)
         max: 100
         value: 50
 
@@ -38,15 +48,17 @@
         orientation: "horizontal"
         size_hint: (1, 0.3)
 
-        TextInput:
+        Label:
             id: text1
             size_hint: (0.5, 1)
-            line_height: 1
-            multiline: False
-            hint_text: 'input'
+            text_size: self.size
+            padding: 5,10
+            halign: "center"
+            valign: "center"
+            text: "fack you"
 
         TextInput:
-            id: text1
+            id: log_textbox
             size_hint: (0.5, 1)
             line_height: 1
             multiline: False
@@ -57,15 +69,148 @@
         size_hint: (1, 0.3)
 
         Button:
-            id: button1
+            id: fetch_button
             size_hint: (0.5, 1)
             text: "FETCH"
             font_size: 37
-            on_press: root.on_command()
+            on_press: root.show_fetch()
 
         Button:
-            id: button1
+            id: output_button
             size_hint: (0.5, 1)
             text: "OUTPUT"
             font_size: 37
-            on_press: root.on_command()
+            on_press: root.show_output()
+
+    Label:
+        size_hint: (1, 0.05)
+
+<LicensePopup>:
+    BoxLayout:
+        orientation: "vertical"
+        Label:
+            id: license_text
+            size_hint: (1, 1)
+            text_size: self.size
+            font_size: 9
+
+<ChannelSetPopup>:
+    BoxLayout:
+        orientation: "horizontal"
+
+        Label:
+            size_hint: (0.2, 1)
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: (0.8, 1)
+
+            Label:
+                size_hint: (1, 0.02)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: (1, 0.08)
+
+                Label:
+                    size_hint: (0.5, 1)
+
+                Switch:
+                    id: remove_switch
+                    active: False
+                    size_hint: (0.28, 1)
+                    font_size: 32
+                    text: "REMOVE"
+                    on_active: root.switch_click(self, self.active)
+
+                Label:
+                    size_hint: (0.22, 1)
+                    text: "REMOVE"
+
+            Label:
+                size_hint: (1, 0.12)
+                text_size: self.size
+                padding: 5, 2
+                halign: "left"
+                valign: "bottom"
+                text: "Channel名"
+
+            TextInput:
+                id: channel_name
+                size_hint: (1, 0.12)
+                line_height: 1
+                multiline: False
+                hint_text: "name"
+
+            Label:
+                size_hint: (1, 0.12)
+                text_size: self.size
+                padding: 5, 2
+                halign: "left"
+                valign: "bottom"
+                text: "ChannelID"
+
+            TextInput:
+                id: channel_id
+                size_hint: (1, 0.12)
+                line_height: 1
+                multiline: False
+                hint_text: "ID"
+
+            Label:
+                size_hint: (1, 0.12)
+                text_size: self.size
+                padding: 5, 2
+                halign: "left"
+                valign: "bottom"
+                text: "BotToken"
+
+            TextInput:
+                id: channel_name
+                size_hint: (1, 0.12)
+                line_height: 1
+                multiline: False
+                hint_text: "token"
+
+            Label:
+                size_hint: (1, 0.03)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: (1, 0.2)
+
+                Button:
+                    size_hint: (0.5, 1)
+                    text: "OK"
+                    font_size: 17
+                    on_release: root.on_command()
+
+                Button:
+                    size_hint: (0.5, 1)
+                    text: "CANCEL"
+                    font_size: 17
+                    on_release: root.close()
+
+        Label:
+            size_hint: (0.2, 1)
+
+
+<FetchPopup>:
+    BoxLayout:
+        orientation: "horizontal"
+        Label:
+            size_hint: (0.2, 1)
+        Label:
+            size_hint: (0.8, 1)
+        Label:
+            size_hint: (0.2, 1)
+
+<OutputPopup>:
+    BoxLayout:
+        orientation: "horizontal"
+        Label:
+            size_hint: (0.2, 1)
+        Label:
+            size_hint: (0.8, 1)
+        Label:
+            size_hint: (0.2, 1)

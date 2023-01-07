@@ -5,19 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: 現在のファイル",
+            "name": "Python: NedLudd",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "justMyCode": true
-        },
-        {
-            "name": "Python: amexdefault",
-            "type": "python",
-            "request": "launch",
-            "cwd": "${workspaceFolder}\\amexdefault\\Development",
-            "program": "${file}",
+            "cwd": "${workspaceFolder}\\nedludd\\Development\\src",
+            "program": "launch.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }
