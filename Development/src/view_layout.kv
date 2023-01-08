@@ -88,6 +88,7 @@
 <LicensePopup>:
     BoxLayout:
         orientation: "vertical"
+
         Label:
             id: license_text
             size_hint: (1, 1)
@@ -198,19 +199,135 @@
 <FetchPopup>:
     BoxLayout:
         orientation: "horizontal"
+
         Label:
             size_hint: (0.2, 1)
-        Label:
+
+        BoxLayout:
+            orientation: "vertical"
             size_hint: (0.8, 1)
+
+            Label:
+                size_hint: (1, 0.15)
+
+            Label:
+                id: channel_name
+                size_hint: (1, 0.15)
+                text_size: self.size
+                padding: 5, 2
+                halign: "left"
+                valign: "bottom"
+                text: "ChannelName"
+
+            ProgressBar:
+                id: progressbar
+                size_hint: (1, 0.2)
+                max: 100
+                value: 50
+
+            Label:
+                id: progress_label
+                size_hint: (1, 0.15)
+                text_size: self.size
+                padding: 5, 2
+                halign: "right"
+                valign: "bottom"
+                text: "1000 / 1000"
+
+            Label:
+                size_hint: (1, 0.15)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: (1, 0.2)
+
+                Button:
+                    size_hint: (0.5, 1)
+                    text: "OK"
+                    font_size: 17
+                    on_release: root.on_command()
+
+                Button:
+                    size_hint: (0.5, 1)
+                    text: "CANCEL"
+                    font_size: 17
+                    on_release: root.close()
+
         Label:
             size_hint: (0.2, 1)
 
 <OutputPopup>:
     BoxLayout:
         orientation: "horizontal"
+
         Label:
             size_hint: (0.2, 1)
-        Label:
+
+        BoxLayout:
+            orientation: "vertical"
             size_hint: (0.8, 1)
+
+            Label:
+                id: save_directory
+                size_hint: (1, 0.26)
+                text_size: self.size
+                color: (1,0,1,1)
+                padding: 5, 2
+                halign: "left"
+                valign: "center"
+                text: "[ref=None]"+root.save_path+"[/ref]"
+                markup: True
+                on_ref_press: root.show_filedialog()
+
+            Label:
+                size_hint: (1, 0.03)
+
+            Label:
+                size_hint: (1, 0.12)
+                text_size: self.size
+                padding: 5, 2
+                halign: "left"
+                valign: "bottom"
+                text: "BETWEEN"
+
+            TextInput:
+                id: start_date
+                size_hint: (1, 0.12)
+                line_height: 1
+                multiline: False
+                hint_text: "start"
+
+            Label:
+                size_hint: (1, 0.12)
+                text_size: self.size
+                padding: 5, 2
+                text: "AND"
+
+            TextInput:
+                id: end_date
+                size_hint: (1, 0.12)
+                line_height: 1
+                multiline: False
+                hint_text: "end"
+
+            Label:
+                size_hint: (1, 0.03)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: (1, 0.2)
+
+                Button:
+                    size_hint: (0.5, 1)
+                    text: "OK"
+                    font_size: 17
+                    on_release: root.on_command()
+
+                Button:
+                    size_hint: (0.5, 1)
+                    text: "CANCEL"
+                    font_size: 17
+                    on_release: root.close()
+
         Label:
             size_hint: (0.2, 1)

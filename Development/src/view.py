@@ -1,3 +1,5 @@
+# Standard lib
+from pathlib import Path
 # Third party
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
@@ -15,57 +17,72 @@ class RootWidget(BoxLayout):
 
     ver_text = StringProperty()
 
-    def __init__(self, version):
+    def __init__(self, version: str, exe_path: Path):
         super().__init__()
-        self.__widgets = {
-
-        }
+        self.__exe_path = exe_path
+        self.__widgets = {}
+        self.__license_pu = None
+        self.__channelset_pu = None
+        self.__fetch_pu = None
+        self.__output_pu = None
         self.__control = Control()
         self.ver_text = version.rsplit(".", 1)[0]
 
     def show_license(self):
-        popup = Popup(
-            title="LICENSE",
-            content=LicensePopup(),
-            size_hint=(0.9, 0.9),
-        )
-        popup.open()
+        if self.__license_pu is None:
+            self.__license_pu = Popup(
+                title="LICENSE",
+                content=LicensePopup(),
+                size_hint=(0.9, 0.9),
+            )
+        self.__license_pu.open()
 
     def show_channelset(self):
-
-        popup = Popup(
-            title="SET CHANNEL",
-            content=ChannelSetPopup(
-                self.__control,
-                close_func=lambda: popup.dismiss()
-            ),
-            size_hint=(0.9, 0.9),
-            auto_dismiss=False
-        )
-        popup.open()
+        if self.__channelset_pu is None:
+            self.__channelset_pu = Popup(
+                title="SET CHANNEL",
+                content=ChannelSetPopup(
+                    self.__control,
+                    close_func=lambda: self.__channelset_pu.dismiss()
+                ),
+                size_hint=(0.9, 0.9),
+                auto_dismiss=False
+            )
+        self.__channelset_pu.open()
 
     def show_fetch(self):
-        popup = Popup(
-            title="FETCH",
-            content=FetchPopup(
-                self.__control,
-                close_func=lambda: popup.dismiss()
-            ),
-            size_hint=(0.9, 0.9),
-            auto_dismiss=False
-        )
-        popup.open()
+        if self.__fetch_pu is None:
+            self.__fetch_pu = Popup(
+                title="FETCH",
+                content=FetchPopup(
+                    self.__control,
+                    close_func=lambda: self.__fetch_pu.dismiss()
+                ),
+                size_hint=(0.9, 0.9),
+                auto_dismiss=False
+            )
+        self.__fetch_pu.open()
 
     def show_output(self):
-        popup = Popup(
-            title="OUTPUT",
-            content=OutputPopup(
-                self.__control,
-                close_func=lambda: popup.dismiss()
-            ),
-            size_hint=(0.9, 0.9),
-        )
-        popup.open()
+        if self.__output_pu is None:
+            self.__output_pu = Popup(
+                title="OUTPUT",
+                content=OutputPopup(
+                    self.__control,
+                    self.__exe_path,
+                    close_func=lambda: self.__output_pu.dismiss(),
+                ),
+                size_hint=(0.9, 0.9),
+            )
+        self.__output_pu.open()
+
+
+class BasePopup(BoxLayout):
+
+    def __init__(self, control, close_func):
+        super().__init__()
+        self.__control = control
+        self.close = close_func
 
 
 class LicensePopup(BoxLayout):
@@ -78,12 +95,10 @@ class LicensePopup(BoxLayout):
         self.ids.license_text.text = text
 
 
-class ChannelSetPopup(BoxLayout):
+class ChannelSetPopup(BasePopup):
 
     def __init__(self, control, close_func):
-        super().__init__()
-        self.__control = control
-        self.close = close_func
+        super().__init__(control, close_func)
 
     # ボタンをクリック時
     def on_command(self):
@@ -94,28 +109,40 @@ class ChannelSetPopup(BoxLayout):
         pass
 
 
-class FetchPopup(BoxLayout):
+class FetchPopup(BasePopup):
 
     def __init__(self, control, close_func):
-        super().__init__()
-        self.__control = control
-        self.close = close_func
+        super().__init__(control, close_func)
+
+    # ボタンをクリック時
+    def on_command(self):
+        # self.ver_text = self.ids.text1.text
+        pass
 
 
-class OutputPopup(BoxLayout):
+class OutputPopup(BasePopup):
 
-    def __init__(self, control, close_func):
-        super().__init__()
-        self.__control = control
-        self.close = close_func
+    save_path = StringProperty()
+
+    def __init__(self, control, exe_path: Path, close_func):
+        super().__init__(control, close_func)
+        self.save_path = str(exe_path)
+        print(exe_path)
+
+    def on_command(self):
+        pass
+
+    def show_filedialog(self):
+        pass
 
 
 class View(App):
-    def __init__(self, root_path, version):
+    def __init__(self, version: str, root_path: Path, exe_path: Path):
         super().__init__()
+        self.__version = version
+        self.__exe_path = exe_path
         Builder.load_file(str(root_path / "view_layout.kv"))
         self.__set_init()
-        self.__version = version
         self.title = "SlackLogAccumulator"
 
     def __set_init(self):
@@ -126,4 +153,4 @@ class View(App):
         LabelBase.register(DEFAULT_FONT, 'msgothic.ttc')
 
     def build(self):
-        return RootWidget(self.__version)
+        return RootWidget(self.__version, self.__exe_path)

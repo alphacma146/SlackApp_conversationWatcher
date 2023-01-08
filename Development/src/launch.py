@@ -7,8 +7,9 @@ from view import View
 
 def main():
     root_path = get_root()
+    exe_path = get_exe_directory()
     version = get_version()
-    View(root_path=root_path, version=version).run()
+    View(version=version, root_path=root_path, exe_path=exe_path).run()
 
 
 def get_version() -> str:
@@ -22,7 +23,16 @@ def get_root() -> Path:
     else:
         ret = Path(__file__).parent
 
-    return ret
+    return ret.absolute()
+
+
+def get_exe_directory() -> Path:
+    if getattr(sys, "frozen", False):
+        ret = Path(sys.argv[0])
+    else:
+        ret = Path(__file__).parent
+
+    return ret.absolute()
 
 
 if __name__ == "__main__":
