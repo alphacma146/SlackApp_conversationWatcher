@@ -127,7 +127,6 @@ class OutputPopup(BasePopup):
     def __init__(self, control, exe_path: Path, close_func):
         super().__init__(control, close_func)
         self.save_path = str(exe_path)
-        print(exe_path)
 
     def on_command(self):
         pass
