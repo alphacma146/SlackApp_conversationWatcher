@@ -17,8 +17,9 @@ class RootWidget(BoxLayout):
 
     ver_text = StringProperty()
 
-    def __init__(self, version: str, exe_path: Path):
+    def __init__(self, version: str, root_path: Path, exe_path: Path):
         super().__init__()
+        self.__root_path = root_path
         self.__exe_path = exe_path
         self.__widgets = {}
         self.__license_pu = None
@@ -32,7 +33,7 @@ class RootWidget(BoxLayout):
         if self.__license_pu is None:
             self.__license_pu = Popup(
                 title="LICENSE",
-                content=LicensePopup(),
+                content=LicensePopup(self.__root_path),
                 size_hint=(0.9, 0.9),
             )
         self.__license_pu.open()
@@ -87,10 +88,10 @@ class BasePopup(BoxLayout):
 
 class LicensePopup(BoxLayout):
 
-    def __init__(self):
+    def __init__(self, root_path):
         super().__init__()
 
-        with open("LICENSE", "r") as f:
+        with open(root_path / "LICENSE", "r") as f:
             text = f.read()
         self.ids.license_text.text = text
 
@@ -139,8 +140,9 @@ class View(App):
     def __init__(self, version: str, root_path: Path, exe_path: Path):
         super().__init__()
         self.__version = version
+        self.__root_path = root_path
         self.__exe_path = exe_path
-        Builder.load_file(str(root_path / "view_layout.kv"))
+        Builder.load_file(str(self.__root_path / "view_layout.kv"))
         self.__set_init()
         self.title = "SlackLogAccumulator"
 
@@ -152,4 +154,4 @@ class View(App):
         LabelBase.register(DEFAULT_FONT, 'msgothic.ttc')
 
     def build(self):
-        return RootWidget(self.__version, self.__exe_path)
+        return RootWidget(self.__version, self.__root_path, self.__exe_path)
