@@ -6,7 +6,11 @@ from sqlite3 import Cursor
 from abst_db import IDBManager
 
 
-class DB_Manager(IDBManager):
+class DBManager(IDBManager):
+    def __new__(cls, *args, **kargs):
+        if not hasattr(cls, "__instance"):
+            cls.__instance = super(DBManager, cls).__new__(cls)
+        return cls.__instance
 
     def __init__(self, exe_path: Path) -> None:
         self.__exe_path = exe_path
