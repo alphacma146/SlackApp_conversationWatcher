@@ -1,9 +1,9 @@
 # Standard lib
-from pathlib import Path
-import sqlite3
 from sqlite3 import Cursor
+import sqlite3
+from pathlib import Path
 # Self made
-from abst_db import IDBManager
+from .abst_db import IDBManager
 
 
 class DBManager(IDBManager):
@@ -12,13 +12,11 @@ class DBManager(IDBManager):
             cls.__instance = super(DBManager, cls).__new__(cls)
         return cls.__instance
 
-    def __init__(self, exe_path: Path) -> None:
-        self.__exe_path = exe_path
-        self.__db_name = "SlackLogAccumulator.db"
+    def __init__(self) -> None:
         self.__connect = None
 
-    def initialize(self) -> Cursor:
-        self.__connect = sqlite3.connect(self.__exe_path / self.__db_name)
+    def initialize(self, db_path: Path) -> Cursor:
+        self.__connect = sqlite3.connect(db_path)
 
         return self.__connect.cursor()
 
@@ -76,4 +74,5 @@ class DBManager(IDBManager):
         return cursor.fetchall()
 
     def close_connect(self) -> None:
-        pass
+
+        self.__connect.close()

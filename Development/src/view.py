@@ -17,16 +17,14 @@ class RootWidget(BoxLayout):
 
     ver_text = StringProperty()
 
-    def __init__(self, version: str, root_path: Path, exe_path: Path):
+    def __init__(self, version: str, root_path: Path):
         super().__init__()
         self.__root_path = root_path
-        self.__exe_path = exe_path
-        self.__widgets = {}
         self.__license_pu = None
         self.__channelset_pu = None
         self.__fetch_pu = None
         self.__output_pu = None
-        self.__control = Control()
+
         self.ver_text = version.rsplit(".", 1)[0]
 
     def show_license(self):
@@ -80,9 +78,8 @@ class RootWidget(BoxLayout):
 
 class BasePopup(BoxLayout):
 
-    def __init__(self, control, close_func):
+    def __init__(self, close_func):
         super().__init__()
-        self.__control = control
         self.close = close_func
 
 
@@ -101,9 +98,9 @@ class ChannelSetPopup(BasePopup):
     def __init__(self, control, close_func):
         super().__init__(control, close_func)
 
-    # ボタンをクリック時
     def on_command(self):
         # self.ver_text = self.ids.text1.text
+
         pass
 
     def switch_click(self, widget, active):
@@ -136,12 +133,30 @@ class OutputPopup(BasePopup):
         pass
 
 
+class InitPopup(BasePopup):
+
+    def __init__(self, control, close_func):
+        super().__init__(close_func)
+        self.__control = control
+
+    def on_command(self):
+
+        ret = self.__control.release_lock(self.ids.key_input.text)
+
+        if not ret:
+            self.ids.result_message.text = "BAD KEY"
+        else:
+            self.ids.result_message.text = "Congraturations!"
+        self.ids.key_input.text = ""
+
+
 class View(App):
     def __init__(self, version: str, root_path: Path, exe_path: Path):
         super().__init__()
         self.__version = version
         self.__root_path = root_path
         self.__exe_path = exe_path
+        self.__control = Control(exe_path, root_path)
         Builder.load_file(str(self.__root_path / "view_layout.kv"))
         self.__set_init()
         self.title = "SlackLogAccumulator"
@@ -153,5 +168,18 @@ class View(App):
         resource_add_path('c:/Windows/Fonts')
         LabelBase.register(DEFAULT_FONT, 'msgothic.ttc')
 
+    def on_start(self):
+        if not self.__control.isexist_dbfile():
+            init_pu = Popup(
+                title="First Awake!",
+                content=InitPopup(
+                    self.__control,
+                    close_func=lambda: init_pu.dismiss()
+                ),
+                size_hint=(0.6, 0.6),
+                auto_dismiss=False
+            )
+            init_pu.open()
+
     def build(self):
-        return RootWidget(self.__version, self.__root_path, self.__exe_path)
+        return RootWidget(self.__version, self.__root_path)

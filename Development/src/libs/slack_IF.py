@@ -1,7 +1,7 @@
 # third party
 from slack_sdk import WebClient
 # Self made
-from abst_slack import ISlackIF
+from .abst_slack import ISlackIF
 
 
 class SlackIF(ISlackIF):
