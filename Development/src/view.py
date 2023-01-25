@@ -1,4 +1,5 @@
 # Standard lib
+import time
 from pathlib import Path
 # Third party
 from kivy.app import App
@@ -17,9 +18,17 @@ class RootWidget(BoxLayout):
 
     ver_text = StringProperty()
 
-    def __init__(self, version: str, root_path: Path):
+    def __init__(
+            self,
+            control: Control,
+            version: str,
+            root_path: Path,
+            exe_path: Path
+    ):
         super().__init__()
+        self.__control = control
         self.__root_path = root_path
+        self.__exe_path = exe_path
         self.__license_pu = None
         self.__channelset_pu = None
         self.__fetch_pu = None
@@ -95,8 +104,9 @@ class LicensePopup(BoxLayout):
 
 class ChannelSetPopup(BasePopup):
 
-    def __init__(self, control, close_func):
-        super().__init__(control, close_func)
+    def __init__(self, control: Control, close_func):
+        super().__init__(close_func)
+        self.__control = control
 
     def on_command(self):
         # self.ver_text = self.ids.text1.text
@@ -109,8 +119,9 @@ class ChannelSetPopup(BasePopup):
 
 class FetchPopup(BasePopup):
 
-    def __init__(self, control, close_func):
-        super().__init__(control, close_func)
+    def __init__(self, control: Control, close_func):
+        super().__init__(close_func)
+        self.__control = control
 
     # ボタンをクリック時
     def on_command(self):
@@ -122,8 +133,9 @@ class OutputPopup(BasePopup):
 
     save_path = StringProperty()
 
-    def __init__(self, control, exe_path: Path, close_func):
-        super().__init__(control, close_func)
+    def __init__(self, control: Control, exe_path: Path, close_func):
+        super().__init__(close_func)
+        self.__control = control
         self.save_path = str(exe_path)
 
     def on_command(self):
@@ -135,7 +147,7 @@ class OutputPopup(BasePopup):
 
 class InitPopup(BasePopup):
 
-    def __init__(self, control, close_func):
+    def __init__(self, control: Control, close_func):
         super().__init__(close_func)
         self.__control = control
 
@@ -146,8 +158,13 @@ class InitPopup(BasePopup):
         if not ret:
             self.ids.result_message.text = "BAD KEY"
         else:
+            time.sleep(0.5)
             self.ids.result_message.text = "Congraturations!"
+
         self.ids.key_input.text = ""
+
+        if ret:
+            self.close()
 
 
 class View(App):
@@ -182,4 +199,9 @@ class View(App):
             init_pu.open()
 
     def build(self):
-        return RootWidget(self.__version, self.__root_path)
+        return RootWidget(
+            self.__control,
+            self.__version,
+            self.__root_path,
+            self.__exe_path
+        )
