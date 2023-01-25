@@ -27,9 +27,9 @@
         Spinner:
             id: spinner
             size_hint: (0.77, 1)
-            text: 'Home'
+            text: "Select Channel"
             font_size: 27
-            values: "A","B","C"
+            values: ""
 
         Button:
             id: channelset_button
@@ -97,9 +97,10 @@
             size_hint: (0.8, 1)
 
             Label:
-                size_hint: (1, 0.25)
+                size_hint: (1, 0.2)
                 text_size: self.size
                 padding: 5, 2
+                font_size: 18
                 halign: "center"
                 valign: "bottom"
                 text: "PASSWORD"
@@ -110,14 +111,16 @@
                 text_size: self.size
                 padding: 5, 2
                 color: 1,0,0,1
+                font_size: 18
                 halign: "center"
                 valign: "bottom"
                 text: ""
 
             TextInput:
                 id: key_input
-                size_hint: (1, 0.2)
+                size_hint: (1, 0.25)
                 line_height: 1
+                font_size: 20
                 multiline: False
                 password: True
                 hint_text: ""
@@ -128,7 +131,7 @@
             Button:
                 size_hint: (1, 0.25)
                 text: "OK"
-                font_size: 17
+                font_size: 20
                 on_release: root.on_command()
 
             Label:
@@ -163,7 +166,7 @@
 
             BoxLayout:
                 orientation: "horizontal"
-                size_hint: (1, 0.08)
+                size_hint: (1, 0.1)
 
                 Label:
                     size_hint: (0.5, 1)
@@ -181,52 +184,41 @@
                     text: "REMOVE"
 
             Label:
-                size_hint: (1, 0.12)
+                size_hint: (1, 0.15)
                 text_size: self.size
                 padding: 5, 2
+                font_size: 18
                 halign: "left"
                 valign: "bottom"
                 text: "Channel名"
 
             TextInput:
                 id: channel_name
-                size_hint: (1, 0.12)
+                size_hint: (1, 0.15)
                 line_height: 1
                 multiline: False
+                font_size: 20
                 hint_text: "name"
 
             Label:
-                size_hint: (1, 0.12)
+                size_hint: (1, 0.15)
                 text_size: self.size
                 padding: 5, 2
+                font_size: 18
                 halign: "left"
                 valign: "bottom"
                 text: "ChannelID"
 
             TextInput:
                 id: channel_id
-                size_hint: (1, 0.12)
+                size_hint: (1, 0.15)
                 line_height: 1
                 multiline: False
+                font_size: 20
                 hint_text: "ID"
 
             Label:
-                size_hint: (1, 0.12)
-                text_size: self.size
-                padding: 5, 2
-                halign: "left"
-                valign: "bottom"
-                text: "BotToken"
-
-            TextInput:
-                id: channel_name
-                size_hint: (1, 0.12)
-                line_height: 1
-                multiline: False
-                hint_text: "token"
-
-            Label:
-                size_hint: (1, 0.03)
+                size_hint: (1, 0.08)
 
             BoxLayout:
                 orientation: "horizontal"
@@ -235,13 +227,13 @@
                 Button:
                     size_hint: (0.5, 1)
                     text: "OK"
-                    font_size: 17
+                    font_size: 20
                     on_release: root.on_command()
 
                 Button:
                     size_hint: (0.5, 1)
                     text: "CANCEL"
-                    font_size: 17
+                    font_size: 20
                     on_release: root.close()
 
         Label:
@@ -267,6 +259,7 @@
                 size_hint: (1, 0.15)
                 text_size: self.size
                 padding: 5, 2
+                font_size: 18
                 halign: "left"
                 valign: "bottom"
                 text: "ChannelName"
@@ -282,6 +275,7 @@
                 size_hint: (1, 0.15)
                 text_size: self.size
                 padding: 5, 2
+                font_size: 18
                 halign: "right"
                 valign: "bottom"
                 text: "1000 / 1000"
@@ -296,13 +290,13 @@
                 Button:
                     size_hint: (0.5, 1)
                     text: "OK"
-                    font_size: 17
+                    font_size: 20
                     on_release: root.on_command()
 
                 Button:
                     size_hint: (0.5, 1)
                     text: "CANCEL"
-                    font_size: 17
+                    font_size: 20
                     on_release: root.close()
 
         Label:
@@ -321,7 +315,7 @@
 
             Label:
                 id: save_directory
-                size_hint: (1, 0.26)
+                size_hint: (1, 0.25)
                 text_size: self.size
                 color: (1,0,1,1)
                 padding: 5, 2
@@ -335,30 +329,34 @@
                 size_hint: (1, 0.03)
 
             Label:
-                size_hint: (1, 0.12)
+                size_hint: (1, 0.1)
                 text_size: self.size
                 padding: 5, 2
+                font_size: 18
                 halign: "left"
                 valign: "bottom"
                 text: "BETWEEN"
 
             TextInput:
                 id: start_date
-                size_hint: (1, 0.12)
+                size_hint: (1, 0.15)
                 line_height: 1
+                font_size: 20
                 multiline: False
                 hint_text: "start"
 
             Label:
-                size_hint: (1, 0.12)
+                size_hint: (1, 0.1)
                 text_size: self.size
+                font_size: 18
                 padding: 5, 2
                 text: "AND"
 
             TextInput:
                 id: end_date
-                size_hint: (1, 0.12)
+                size_hint: (1, 0.15)
                 line_height: 1
+                font_size: 20
                 multiline: False
                 hint_text: "end"
 
@@ -372,13 +370,13 @@
                 Button:
                     size_hint: (0.5, 1)
                     text: "OK"
-                    font_size: 17
+                    font_size: 20
                     on_release: root.on_command()
 
                 Button:
                     size_hint: (0.5, 1)
                     text: "CANCEL"
-                    font_size: 17
+                    font_size: 20
                     on_release: root.close()
 
         Label:

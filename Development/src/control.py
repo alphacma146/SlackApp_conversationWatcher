@@ -5,6 +5,8 @@ from Crypto.Cipher import AES
 # Saif made
 from model import Model
 
+KEY_TAIL = "TK"
+
 
 class Control():
 
@@ -21,9 +23,18 @@ class Control():
 
         return path.exists()
 
+    def start_up(self, token: str = None):
+
+        self.__model.initialize(first=True)
+        if token is None:
+            token = self.__model.get_token()
+        else:
+            self.__model.insert_token(token)
+        self.__token = token
+
     def release_lock(self, key: str):
 
-        key = (key * 2 + "TK").encode()
+        key = (key * 2 + KEY_TAIL).encode()
         if len(key) != AES.block_size:
             return False
 
@@ -38,22 +49,12 @@ class Control():
         except ValueError:
             return False
 
-        self.__model.initialize(first=True)
-        self.__model.insert_token(decrypted_token)
-        self.__token = decrypted_token
+        self.start_up(decrypted_token)
 
         return True
 
-    def get_token(self):
+    def get_channel_list(self):
 
-        self.__model.initialize(first=False)
-        self.__token = self.__model.get_token()
+        ret = self.__model.get_channel()
 
-        print(self.__token)
-
-    def set_spinneritems(self):
-
-        tables = self.__model.get_dbtable()
-
-    def create_table(self):
-        pass
+        return ret.values()

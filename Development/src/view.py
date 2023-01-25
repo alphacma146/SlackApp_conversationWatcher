@@ -188,7 +188,7 @@ class View(App):
     def on_start(self):
         if not self.__control.isexist_dbfile():
             init_pu = Popup(
-                title="First Awake!",
+                title="First StartUp!",
                 content=InitPopup(
                     self.__control,
                     close_func=lambda: init_pu.dismiss()
@@ -198,7 +198,7 @@ class View(App):
             )
             init_pu.open()
         else:
-            self.__control.get_token()
+            self.__control.start_up()
 
     def build(self):
         return RootWidget(

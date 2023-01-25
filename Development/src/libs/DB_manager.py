@@ -27,8 +27,6 @@ class DBManager(IDBManager):
             values: tuple = None
     ) -> None:
 
-        print(sql_text)
-
         if values is None:
             cursor.execute(sql_text)
         else:
@@ -76,8 +74,10 @@ class DBManager(IDBManager):
         if terms is None:
             query = f"SELECT {col} FROM {table_name}"
         else:
-            query = f"SELECT {col} FROM {table_name} {terms}"
+            query = f"SELECT {col} FROM {table_name} WHERE {terms}"
         self.query_execute(cursor, query)
+
+        # DBからの戻り値は[(data,data,data),(...)]のため
         ret = [
             {key: val for (key, val) in zip(columns, values)}
             for values in cursor.fetchall()

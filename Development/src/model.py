@@ -8,10 +8,16 @@ from libs.DB_manager import DBManager
 
 @dataclass(frozen=True)
 class TableConfig:
-    token_store: dict = field(default_factory=lambda: {
+    token_table: str = "token_meta"
+    token_table_cols: dict = field(default_factory=lambda: {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-        "token": "TEXT NOT NULL",
-        "date": "TEXT"
+        "token": "STRING NOT NULL",
+        "date": "STRING"
+    })
+    channel_table: str = "channel_master"
+    channel_table_cols: dict = field(default_factory=lambda: {
+        "channel_id": "STRING PRIMARY KEY",
+        "channel_name": "STRING NOT NULL",
     })
 
 
@@ -33,8 +39,13 @@ class Model():
         if first:
             self.__DBMngr.create_table(
                 self.__cursor,
-                "TOKEN_STORE",
-                self.__table_config.token_store
+                self.__table_config.token_table,
+                self.__table_config.token_table_cols
+            )
+            self.__DBMngr.create_table(
+                self.__cursor,
+                self.__table_config.channel_table,
+                self.__table_config.channel_table_cols
             )
 
     def get_dbfilename(self):
@@ -43,25 +54,48 @@ class Model():
 
     def get_dbtable(self):
 
-        return self.__DBMngr.get_table_all(self.__cursor)
+        ret = self.__DBMngr.get_table_all(self.__cursor)
+
+        return ret
 
     def insert_token(self, token: str):
 
         self.__DBMngr.insert(
             self.__cursor,
-            "TOKEN_STORE",
+            self.__table_config.token_table,
             {
                 "token": token,
                 "date": time.strftime('%Y/%m/%d %H:%M:%S')
             }
         )
 
-    def get_token(self):
+    def get_token(self) -> str:
 
         token_data = self.__DBMngr.select(
             self.__cursor,
-            "TOKEN_STORE",
-            self.__table_config.token_store.keys()
+            self.__table_config.token_table,
+            self.__table_config.token_table_cols.keys()
         )
 
         return token_data[-1].get("token")
+
+    def insert_channel(self, name: str, chn_id: str):
+
+        self.__DBMngr.insert(
+            self.__cursor,
+            self.__table_config.channel_table,
+            {
+                "channel_id": chn_id,
+                "channel_name": name
+            }
+        )
+
+    def get_channel(self) -> list:
+
+        channel_data = self.__DBMngr.select(
+            self.__cursor,
+            self.__table_config.channel_table,
+            self.__table_config.channel_table_cols.keys()
+        )
+
+        return channel_data
