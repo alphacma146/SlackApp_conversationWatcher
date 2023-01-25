@@ -156,10 +156,10 @@ class InitPopup(BasePopup):
         ret = self.__control.release_lock(self.ids.key_input.text)
 
         if not ret:
-            self.ids.result_message.text = "BAD KEY"
+            self.ids.result_message.text = "Failure"
         else:
             time.sleep(0.5)
-            self.ids.result_message.text = "Congraturations!"
+            self.ids.result_message.text = "Congratulations!"
 
         self.ids.key_input.text = ""
 
@@ -197,6 +197,8 @@ class View(App):
                 auto_dismiss=False
             )
             init_pu.open()
+        else:
+            self.__control.get_token()
 
     def build(self):
         return RootWidget(

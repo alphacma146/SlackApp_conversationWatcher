@@ -27,7 +27,12 @@ class DBManager(IDBManager):
             values: tuple = None
     ) -> None:
 
-        cursor.execute(sql_text, values)
+        print(sql_text)
+
+        if values is None:
+            cursor.execute(sql_text)
+        else:
+            cursor.execute(sql_text, values)
         self.__connect.commit()
 
     def get_table_all(self, cursor: Cursor) -> list:
@@ -45,7 +50,7 @@ class DBManager(IDBManager):
     ):
 
         col = ", ".join([f"{key} {val}" for (key, val) in columns.items()])
-        query = f"CREATE TABLE IF NOT EXISTS {table_name}({col})"
+        query = f"CREATE TABLE IF NOT EXISTS {table_name} ({col})"
         self.query_execute(cursor, query)
 
     def remove_table(self, cursor: Cursor, table_name: str):
@@ -57,21 +62,28 @@ class DBManager(IDBManager):
         col = ", ".join(data.keys())
         sac = ", ".join(["?"] * len(data))
         query = f"INSERT INTO {table_name}({col}) values({sac})"
-        self.query_execute(cursor, query, values=data.values())
+        self.query_execute(cursor, query, values=tuple(data.values()))
 
     def select(
         self,
         cursor: Cursor,
         table_name: str,
         columns: list,
-        terms: str
-    ):
+        terms: str = None
+    ) -> dict:
 
         col = ", ".join(columns)
-        query = f"SELECT {col} FORM {table_name} {terms}"
+        if terms is None:
+            query = f"SELECT {col} FROM {table_name}"
+        else:
+            query = f"SELECT {col} FROM {table_name} {terms}"
         self.query_execute(cursor, query)
+        ret = [
+            {key: val for (key, val) in zip(columns, values)}
+            for values in cursor.fetchall()
+        ]
 
-        return cursor.fetchall()
+        return ret
 
     def close_connect(self) -> None:
 

@@ -13,6 +13,7 @@ class Control():
         self.__model = Model(exe_path)
         self.__exe_path = exe_path
         self.__root_path = root_path
+        self.__token = None
 
     def isexist_dbfile(self):
 
@@ -37,10 +38,18 @@ class Control():
         except ValueError:
             return False
 
-        self.__model.initialize()
-        print(decrypted_token)
+        self.__model.initialize(first=True)
+        self.__model.insert_token(decrypted_token)
+        self.__token = decrypted_token
 
         return True
+
+    def get_token(self):
+
+        self.__model.initialize(first=False)
+        self.__token = self.__model.get_token()
+
+        print(self.__token)
 
     def set_spinneritems(self):
 
