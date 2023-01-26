@@ -83,6 +83,9 @@ class DBManager(IDBManager):
             for values in cursor.fetchall()
         ]
 
+        if len(ret) == 0:
+            ret = {}
+
         return ret
 
     def close_connect(self) -> None:

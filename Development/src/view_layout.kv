@@ -29,6 +29,7 @@
             size_hint: (0.77, 1)
             text: "Select Channel"
             font_size: 27
+            text_autoupdate: True
             values: ""
 
         Button:
@@ -149,6 +150,31 @@
             size_hint: (1, 1)
             text_size: self.size
             font_size: 9
+
+<MessagePopup>:
+    BoxLayout:
+        orientation: "horizontal"
+
+        Label:
+            size_hint: (0.075, 1)
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: (0.85, 1)
+
+            Label:
+                id: message_text
+                size_hint: (1, 1)
+                text_size: self.size
+                halign: "left"
+                valign: "center"
+                font_size: 18
+                text: "fackyou\nfachhh"
+                markup: True
+
+        Label:
+            size_hint: (0.075, 1)
+
 
 <ChannelSetPopup>:
     BoxLayout:
