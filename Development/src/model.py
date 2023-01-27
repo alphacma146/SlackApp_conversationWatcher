@@ -2,8 +2,11 @@
 import time
 from pathlib import Path
 from dataclasses import dataclass, field
+# Third party
+import pandas as pd
 # Saif made
 from libs.DB_manager import DBManager
+from appconfig import get_logger, MessageText
 
 
 @dataclass(frozen=True)
@@ -28,22 +31,19 @@ class Model():
         self.__db_name = "SlackLogAccumulator.db"
         self.__DBMngr = DBManager()
         self.__exe_path = exe_path
-        self.__cursor = None
+
         self.__table_config = TableConfig()
+        self.__logger = get_logger(__name__)
 
     def initialize(self, first: bool):
 
-        self.__cursor = self.__DBMngr.initialize(
-            self.__exe_path / self.__db_name
-        )
+        self.__DBMngr.initialize(self.__exe_path / self.__db_name)
         if first:
             self.__DBMngr.create_table(
-                self.__cursor,
                 self.__table_config.token_table,
                 self.__table_config.token_table_cols
             )
             self.__DBMngr.create_table(
-                self.__cursor,
                 self.__table_config.channel_table,
                 self.__table_config.channel_table_cols
             )
@@ -54,14 +54,14 @@ class Model():
 
     def get_dbtable(self):
 
-        ret = self.__DBMngr.get_table_all(self.__cursor)
+        ret = self.__DBMngr.get_table_all()
+        self.__logger.info(ret)
 
         return ret
 
     def insert_token(self, token: str):
 
         self.__DBMngr.insert(
-            self.__cursor,
             self.__table_config.token_table,
             {
                 "token": token,
@@ -71,18 +71,19 @@ class Model():
 
     def get_token(self) -> str:
 
-        token_data = self.__DBMngr.select(
-            self.__cursor,
+        ret = self.__DBMngr.select(
             self.__table_config.token_table,
             self.__table_config.token_table_cols.keys()
         )
+        self.__logger.info(ret)
+        ret["date"] = pd.to_datetime(ret["date"])
+        df = ret.loc[[ret["date"].idxmax()]]
 
-        return token_data[-1].get("token")
+        return df["token"]
 
-    def insert_channel(self, name: str, chn_id: str):
+    def insert_channel(self, chn_id: str, name: str):
 
         self.__DBMngr.insert(
-            self.__cursor,
             self.__table_config.channel_table,
             {
                 "channel_id": chn_id,
@@ -92,10 +93,10 @@ class Model():
 
     def get_channel(self) -> list:
 
-        channel_data = self.__DBMngr.select(
-            self.__cursor,
+        ret = self.__DBMngr.select(
             self.__table_config.channel_table,
             self.__table_config.channel_table_cols.keys()
         )
+        self.__logger.info(ret)
 
-        return channel_data
+        return ret

@@ -6,6 +6,7 @@ from view import View
 
 
 def main():
+
     root_path = get_root()
     exe_path = get_exe_directory()
     version = get_version()

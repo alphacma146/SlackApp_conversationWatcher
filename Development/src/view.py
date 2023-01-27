@@ -1,7 +1,6 @@
 # Standard lib
 import time
 from pathlib import Path
-from dataclasses import dataclass
 # Third party
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
@@ -13,11 +12,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
 # Self made
 from control import Control
-
-
-@dataclass(frozen=True)
-class MessageText:
-    value_error: str = "値が不正です。"
+from appconfig import get_logger, MessageText
 
 
 class RootWidget(BoxLayout):
@@ -35,13 +30,14 @@ class RootWidget(BoxLayout):
         self.__control = control
         self.__root_path = root_path
         self.__exe_path = exe_path
-        self.__create_popup()
+        self.__msgtex = MessageText()
 
+        self.__create_popup()
         self.ver_text = version.rsplit(".", 1)[0]
 
     def update_layout(self):
 
-        self.ids.spinner.values = self.__control.get_channel_list()
+        self.ids.spinner.values = self.__control.get_channelname_list(True)
 
     def __create_popup(self):
 
@@ -61,8 +57,11 @@ class RootWidget(BoxLayout):
             title="SET CHANNEL",
             content=ChannelSetPopup(
                 self.__control,
+                self.__msgtex,
+                self.ids.spinner,
                 close_func=lambda: self.__channelset_pu.dismiss(),
-                show_func=self.show_message
+                show_func=self.show_message,
+                update_func=self.update_layout
             ),
             size_hint=(0.9, 0.9),
             auto_dismiss=False
@@ -133,16 +132,81 @@ class MessagePopup(BoxLayout):
 
 class ChannelSetPopup(BasePopup):
 
-    def __init__(self, control: Control, close_func, show_func):
+    def __init__(
+            self,
+            control: Control,
+            message: MessageText,
+            spinner,
+            close_func,
+            show_func,
+            update_func
+    ):
         super().__init__(close_func, show_func)
         self.__control = control
+        self.__msgtex = message
+        self.__spinner = spinner
+        self.update_window = update_func
+
+    def close_popup(self):
+        self.refresh_layout()
+        self.close()
 
     def on_command(self):
 
-        self.error_pop("[i]Hello [color=ff0000]world[/color][/i]")
+        if self.ids.remove_switch.active:
+            self.__delete_channel()
 
-    def switch_click(self, widget, active):
+        else:
+            self.__new_channel()
+
+        self.update_window()
+        self.refresh_layout()
+        self.close()
+
+    def __new_channel(self):
+
+        def replace_space(text: str):
+            return text.replace(" ", "_").replace("　", "＿")
+
+        name_text = replace_space(self.ids.channel_name.text)
+        id_text = replace_space(self.ids.channel_id.text)
+
+        if any([len(name_text) == 0, len(id_text) == 0]):
+            self.error_pop(self.__msgtex.no_text)
+            return
+
+        if not id_text.isascii():
+            self.error_pop(self.__msgtex.full_pitch.replace("<>", "ID"))
+            return
+
+        self.__control.set_channel(id_text, name_text)
+
+    def __delete_channel(self):
         pass
+
+    def switch_click(self):
+
+        target = self.__spinner.text
+
+        if self.ids.remove_switch.active:
+            df = self.__control.get_channelname_list()
+            target_id = df[df["channel_name"] == target]["channel_id"]
+            self.ids.channel_name.text = target
+            self.ids.channel_name.disabled = True
+            self.ids.channel_id.text = target_id.item()
+            self.ids.channel_id.disabled = True
+
+        else:
+            self.ids.channel_name.disabled = False
+            self.ids.channel_name.text = ""
+            self.ids.channel_id.disabled = False
+            self.ids.channel_id.text = ""
+
+    def refresh_layout(self):
+
+        self.ids.channel_name.text = ""
+        self.ids.channel_id.text = ""
+        self.ids.remove_switch.active = False
 
 
 class FetchPopup(BasePopup):
@@ -181,9 +245,10 @@ class OutputPopup(BasePopup):
 
 class InitPopup(BasePopup):
 
-    def __init__(self, control: Control, close_func, show_func):
-        super().__init__(close_func, show_func)
+    def __init__(self, control: Control, close_func, setlayout_func):
+        super().__init__(close_func, None)
         self.__control = control
+        self.update_layout = setlayout_func
 
     def on_command(self):
 
@@ -198,6 +263,7 @@ class InitPopup(BasePopup):
         self.ids.key_input.text = ""
 
         if ret:
+            self.update_layout()
             self.close()
 
 
@@ -213,6 +279,8 @@ class View(App):
         self.__set_init()
         self.title = "SlackLogAccumulator"
 
+        self.__logger = get_logger(__name__)
+
     def __set_init(self):
         Config.set('graphics', 'fullscreen', '0')
         Config.set('graphics', 'width', '470')
@@ -222,19 +290,22 @@ class View(App):
 
     def on_start(self):
         if not self.__control.isexist_dbfile():
+            self.__logger.info("isexist_dbfile FALSE")
             init_pu = Popup(
                 title="First StartUp!",
                 content=InitPopup(
                     self.__control,
-                    close_func=lambda: init_pu.dismiss()
+                    close_func=lambda: init_pu.dismiss(),
+                    setlayout_func=self.__widget.update_layout
                 ),
                 size_hint=(0.6, 0.6),
                 auto_dismiss=False
             )
             init_pu.open()
         else:
+            self.__logger.info("isexist_dbfile TRUE")
             self.__control.start_up()
-        self.__widget.update_layout()
+            self.__widget.update_layout()
 
     def build(self):
 

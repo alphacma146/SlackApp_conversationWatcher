@@ -4,6 +4,7 @@ from pathlib import Path
 from Crypto.Cipher import AES
 # Saif made
 from model import Model
+from appconfig import get_logger, MessageText
 
 KEY_TAIL = "TK"
 
@@ -16,6 +17,8 @@ class Control():
         self.__exe_path = exe_path
         self.__root_path = root_path
         self.__token = None
+
+        self.__logger = get_logger(__name__)
 
     def isexist_dbfile(self):
 
@@ -31,6 +34,7 @@ class Control():
         else:
             self.__model.insert_token(token)
         self.__token = token
+        self.__logger.info(token)
 
     def release_lock(self, key: str):
 
@@ -53,8 +57,16 @@ class Control():
 
         return True
 
-    def get_channel_list(self):
+    def get_channelname_list(self, squeeze: bool = False):
 
         ret = self.__model.get_channel()
+        if squeeze:
+            df = ret["channel_name"]
+        else:
+            df = ret
 
-        return ret.values()
+        return df
+
+    def set_channel(self, chn_id: str, name: str):
+
+        self.__model.insert_channel(chn_id, name)
