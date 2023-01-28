@@ -78,7 +78,7 @@ class Control():
 
         self.__model.delete_channel(chn_id)
 
-    def fetch_data(self, chn_name: str):
+    def fetch_data(self, chn_name: str, progressbar, progress_label):
 
         chn_df = self.get_channelname_list()
         chn_id = chn_df[chn_df["channel_name"] == chn_name]["channel_id"]
@@ -87,6 +87,8 @@ class Control():
         self.__model.create_datatable(chn_id)
 
         (res1, mem_data), (res2, his_data) = self.__fetch.execute(chn_id)
+        total = len(his_data)
+        progress_label.text = f"0 / {total}"
 
         match (res1, res2):
             case (False, False):
@@ -99,5 +101,7 @@ class Control():
         for data in mem_data:
             self.__model.insert_member(chn_id, data)
 
-        for data in his_data:
+        for i, data in enumerate(his_data, start=1):
             self.__model.insert_history(chn_id, data)
+            progress_label.text = f"{i} / {total}"
+            progressbar.value = i / total * 100

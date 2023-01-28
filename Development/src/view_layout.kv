@@ -316,16 +316,18 @@
                 size_hint: (1, 0.2)
 
                 Button:
+                    id: ok_button
                     size_hint: (0.5, 1)
                     text: "OK"
                     font_size: 20
                     on_release: root.on_command()
 
                 Button:
+                    id: cancel_button
                     size_hint: (0.5, 1)
                     text: "CANCEL"
                     font_size: 20
-                    on_release: root.close()
+                    on_release: root.close_popup()
 
         Label:
             size_hint: (0.2, 1)

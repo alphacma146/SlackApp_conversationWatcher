@@ -1,4 +1,5 @@
 # Standard lib
+from concurrent.futures import ThreadPoolExecutor
 # Third party
 # Saif made
 from .abst_app import BaseAppFunction
@@ -12,8 +13,16 @@ class Fetch_Data(BaseAppFunction):
 
     def execute(self, chn_id: str) -> tuple:
 
-        mem_res = self.__get_member(chn_id)
-        his_res = self.__get_history(chn_id)
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            future = {
+                key: executor.submit(func, chn_id) for (key, func) in {
+                    "mem": self.__get_member,
+                    "his": self.__get_history,
+                }.items()
+            }
+
+        mem_res = future["mem"].result()
+        his_res = future["his"].result()
 
         return mem_res, his_res
 

@@ -1,6 +1,7 @@
 # Standard lib
 import time
 from pathlib import Path
+import threading
 # Third party
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
@@ -231,7 +232,26 @@ class FetchPopup(BasePopup):
 
     def on_command(self):
 
-        self.__control.fetch_data(self.ids.channel_name.text)
+        self.refresh_layout()
+        self.__abled_button(False)
+        threading.Thread(target=self.__process).start()
+
+    def __process(self):
+
+        ret = self.__control.fetch_data(
+            self.ids.channel_name.text,
+            self.ids.progressbar,
+            self.ids.progress_label
+        )
+        if ret is not None:
+            self.error_pop(ret)
+
+        self.__abled_button(True)
+
+    def __abled_button(self, able: bool):
+
+        self.ids.ok_button.disabled = not able
+        self.ids.cancel_button.disabled = not able
 
     def refresh_layout(self):
 
