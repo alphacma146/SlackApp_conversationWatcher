@@ -100,6 +100,7 @@ class RootWidget(BoxLayout):
         self.__channelset_pu.open()
 
     def show_fetch(self):
+        self.__fetch_pu.content.ids.channel_name.text = self.ids.spinner.text
         self.__fetch_pu.open()
 
     def show_output(self):
@@ -148,20 +149,21 @@ class ChannelSetPopup(BasePopup):
         self.update_window = update_func
 
     def close_popup(self):
-        self.refresh_layout()
         self.close()
+        self.refresh_layout()
 
     def on_command(self):
 
         if self.ids.remove_switch.active:
-            self.__delete_channel()
+            result = self.__delete_channel()
 
         else:
-            self.__new_channel()
+            result = self.__new_channel()
 
-        self.update_window()
-        self.refresh_layout()
-        self.close()
+        if result:
+            self.update_window()
+            self.refresh_layout()
+            self.close()
 
     def __new_channel(self):
 
@@ -176,13 +178,21 @@ class ChannelSetPopup(BasePopup):
             return
 
         if not id_text.isascii():
-            self.error_pop(self.__msgtex.full_pitch.replace("<>", "ID"))
+            self.error_pop(self.__msgtex.not_ascii.replace("<>", "ID"))
             return
 
         self.__control.set_channel(id_text, name_text)
 
+        return True
+
     def __delete_channel(self):
-        pass
+
+        target = self.__spinner.text
+        id_text = self.ids.channel_id.text
+        self.error_pop(self.__msgtex.delete_item.replace("<>", target))
+        self.__control.del_channel(id_text)
+
+        return True
 
     def switch_click(self):
 
@@ -193,7 +203,7 @@ class ChannelSetPopup(BasePopup):
             target_id = df[df["channel_name"] == target]["channel_id"]
             self.ids.channel_name.text = target
             self.ids.channel_name.disabled = True
-            self.ids.channel_id.text = target_id.item()
+            self.ids.channel_id.text = target_id.to_string(index=False)
             self.ids.channel_id.disabled = True
 
         else:
@@ -215,10 +225,18 @@ class FetchPopup(BasePopup):
         super().__init__(close_func, show_func)
         self.__control = control
 
-    # ボタンをクリック時
+    def close_popup(self):
+        self.close()
+        self.refresh_layout()
+
     def on_command(self):
-        # self.ver_text = self.ids.text1.text
-        pass
+
+        self.__control.fetch_data(self.ids.channel_name.text)
+
+    def refresh_layout(self):
+
+        self.ids.progressbar.value = 0
+        self.ids.progress_label.text = "xxxx / xxxx"
 
 
 class OutputPopup(BasePopup):

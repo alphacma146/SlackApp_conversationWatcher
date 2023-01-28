@@ -11,34 +11,36 @@ class SlackIF(ISlackIF):
         return cls.__instance
 
     def __init__(self) -> None:
+
         self.__limit = 1000
+        self.__client = None
 
-    def get_client(self, token: str) -> WebClient:
+    def init_client(self, token: str):
 
-        return WebClient(token)
+        self.__client = WebClient(token)
 
-    def get_members_info(self, client: WebClient, channel_id: str) -> tuple:
+    def get_members_id(self, channel_id: str) -> tuple:
 
-        response = client.conversations_members(channel=channel_id)
-        if response["ok"] is False:
+        response = self.__client.conversations_members(channel=channel_id)
+        if response["ok"]:
+            return response["ok"], response.get("members")
+        else:
             return response["ok"], response.get("error")
 
-        user_ids = response["members"]
-        ret = {
-            user_data["id"]: user_data["real_name"]
-            for user_data
-            in [client.users_info(user=user).get("user") for user in user_ids]
-        }
+    def get_member_info(self, member_id: str) -> tuple:
 
-        return response["ok"], ret
+        response = self.__client.users_info(user=member_id)
+        if response["ok"]:
+            return response["ok"], response.get("user")
+        else:
+            return response["ok"], response.get("error")
 
     def get_conversations_history(
             self,
-            client: WebClient,
             channel_id: str
     ) -> tuple:
 
-        response = client.conversations_history(
+        response = self.__client.conversations_history(
             channel=channel_id, limit=self.__limit
         )
         if response["ok"] is False:

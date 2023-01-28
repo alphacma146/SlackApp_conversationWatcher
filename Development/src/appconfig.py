@@ -20,4 +20,5 @@ def get_logger(name: str):
 class MessageText:
     value_error: str = "値が不正です。"
     no_text: str = "値を入力してください。"
-    full_pitch: str = "<>は半角英数字で入力してください。"
+    not_ascii: str = "<>は半角英数字で入力してください。"
+    delete_item: str = "<>は削除されました。"

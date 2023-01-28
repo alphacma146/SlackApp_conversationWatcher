@@ -28,6 +28,8 @@ class DBManager(IDBManager):
             values: tuple = None
     ) -> None:
 
+        print(sql_text)
+
         if values is None:
             self.__cursor.execute(sql_text)
         else:
@@ -59,8 +61,13 @@ class DBManager(IDBManager):
 
         col = ", ".join(data.keys())
         sac = ", ".join(["?"] * len(data))
-        query = f"INSERT INTO {table_name}({col}) values({sac})"
-        self.query_execute(query, values=tuple(data.values()))
+        query1 = f"REPLACE INTO {table_name}({col}) values({sac})"
+        self.query_execute(query1, values=tuple(data.values()))
+
+    def delete(self, table_name: str, data: str, value: str):
+
+        query = f"DELETE FROM {table_name} WHERE {data} = ?"
+        self.query_execute(query, values=(value,))
 
     def select(
         self,
@@ -75,7 +82,6 @@ class DBManager(IDBManager):
         else:
             query = f"SELECT {col} FROM {table_name} WHERE {terms}"
 
-        # DBからの戻り値は[(data,data,data),(...)]のため
         ret = pd.read_sql_query(query, self.__connect)
 
         return ret

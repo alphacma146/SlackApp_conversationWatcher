@@ -22,6 +22,19 @@ class TableConfig:
         "channel_id": "STRING PRIMARY KEY",
         "channel_name": "STRING NOT NULL",
     })
+    user_table: str = "_user_master"
+    user_table_cols: dict = field(default_factory=lambda: {
+        "user_id": "STRING PRIMARY KEY",
+        "user_name": "STRING NOT NULL",
+        "real_name": "STRING",
+    })
+    data_table_cols: dict = field(default_factory=lambda: {
+        "id": "STRING PRIMARY KEY",
+        "user_id": "STRING NOT NULL",
+        "timestamp": "STRING NOT NULL",
+        "text": "STRING NOT NULL",
+        "reaction": "INT"
+    })
 
 
 class Model():
@@ -91,6 +104,14 @@ class Model():
             }
         )
 
+    def delete_channel(self, chn_id: str):
+
+        self.__DBMngr.delete(
+            self.__table_config.channel_table,
+            "channel_id",
+            chn_id
+        )
+
     def get_channel(self) -> list:
 
         ret = self.__DBMngr.select(
@@ -100,3 +121,22 @@ class Model():
         self.__logger.info(ret)
 
         return ret
+
+    def create_datatable(self, chn_id: str):
+
+        self.__DBMngr.create_table(chn_id, self.__table_config.data_table_cols)
+        self.__DBMngr.create_table(
+            chn_id + self.__table_config.user_table,
+            self.__table_config.user_table_cols
+        )
+
+    def insert_member(self, chn_id: str, data: dict):
+
+        self.__DBMngr.insert(
+            chn_id + self.__table_config.user_table,
+            data
+        )
+
+    def insert_history(self, chn_id: str, data: dict):
+
+        self.__DBMngr.insert(chn_id, data)

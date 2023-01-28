@@ -4,6 +4,8 @@ from pathlib import Path
 from Crypto.Cipher import AES
 # Saif made
 from model import Model
+from libs.slack_IF import SlackIF
+from libs.fetch import Fetch_Data
 from appconfig import get_logger, MessageText
 
 KEY_TAIL = "TK"
@@ -14,9 +16,10 @@ class Control():
     def __init__(self, exe_path: Path, root_path: Path) -> None:
 
         self.__model = Model(exe_path)
+        self.__slcIF = SlackIF()
+        self.__fetch = Fetch_Data()
         self.__exe_path = exe_path
         self.__root_path = root_path
-        self.__token = None
 
         self.__logger = get_logger(__name__)
 
@@ -33,7 +36,7 @@ class Control():
             token = self.__model.get_token()
         else:
             self.__model.insert_token(token)
-        self.__token = token
+        self.__slcIF.init_client(token)
         self.__logger.info(token)
 
     def release_lock(self, key: str):
@@ -70,3 +73,29 @@ class Control():
     def set_channel(self, chn_id: str, name: str):
 
         self.__model.insert_channel(chn_id, name)
+
+    def del_channel(self, chn_id: str):
+
+        self.__model.delete_channel(chn_id)
+
+    def fetch_data(self, chn_name: str):
+
+        chn_df = self.get_channelname_list()
+        chn_id = chn_df[chn_df["channel_name"] == chn_name]["channel_id"]
+        self.__model.create_datatable(chn_id.to_string(index=False))
+
+        (res1, mem_data), (res2, his_data) = self.__fetch.execute(chn_id)
+
+        match (res1, res2):
+            case (False, False):
+                return mem_data + "\n" + his_data
+            case (False, True):
+                return mem_data
+            case (True, False):
+                return his_data
+
+        for data in mem_data:
+            self.__model.insert_member(chn_id, data)
+
+        for data in his_data:
+            self.__model.insert_history(chn_id, data)
