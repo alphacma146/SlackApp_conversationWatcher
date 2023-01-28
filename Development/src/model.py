@@ -8,31 +8,33 @@ import pandas as pd
 from libs.DB_manager import DBManager
 from appconfig import get_logger, MessageText
 
+pd.options.display.show_dimensions = True
+
 
 @dataclass(frozen=True)
 class TableConfig:
     token_table: str = "token_meta"
     token_table_cols: dict = field(default_factory=lambda: {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
-        "token": "STRING NOT NULL",
-        "date": "STRING"
+        "token": "TEXT NOT NULL",
+        "date": "TEXT"
     })
     channel_table: str = "channel_master"
     channel_table_cols: dict = field(default_factory=lambda: {
-        "channel_id": "STRING PRIMARY KEY",
-        "channel_name": "STRING NOT NULL",
+        "channel_id": "TEXT PRIMARY KEY",
+        "channel_name": "TEXT NOT NULL",
     })
     user_table: str = "_user_master"
     user_table_cols: dict = field(default_factory=lambda: {
-        "user_id": "STRING PRIMARY KEY",
-        "user_name": "STRING NOT NULL",
-        "real_name": "STRING",
+        "user_id": "TEXT PRIMARY KEY",
+        "user_name": "TEXT NOT NULL",
+        "real_name": "TEXT",
     })
     data_table_cols: dict = field(default_factory=lambda: {
-        "id": "STRING PRIMARY KEY",
-        "user_id": "STRING NOT NULL",
-        "timestamp": "STRING NOT NULL",
-        "text": "STRING NOT NULL",
+        "id": "TEXT PRIMARY KEY",
+        "user_id": "TEXT NOT NULL",
+        "timestamp": "TEXT NOT NULL",
+        "text": "TEXT NOT NULL",
         "reaction": "INT"
     })
 
@@ -88,11 +90,12 @@ class Model():
             self.__table_config.token_table,
             self.__table_config.token_table_cols.keys()
         )
-        self.__logger.info(ret)
+        self.__logger.info(ret.dtypes)
         ret["date"] = pd.to_datetime(ret["date"])
         df = ret.loc[[ret["date"].idxmax()]]
+        token = df["token"].to_string(index=False)
 
-        return df["token"]
+        return token
 
     def insert_channel(self, chn_id: str, name: str):
 

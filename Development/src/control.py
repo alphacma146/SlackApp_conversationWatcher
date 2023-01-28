@@ -17,7 +17,7 @@ class Control():
 
         self.__model = Model(exe_path)
         self.__slcIF = SlackIF()
-        self.__fetch = Fetch_Data()
+        self.__fetch = Fetch_Data(self.__slcIF)
         self.__exe_path = exe_path
         self.__root_path = root_path
 
@@ -36,7 +36,7 @@ class Control():
             token = self.__model.get_token()
         else:
             self.__model.insert_token(token)
-        self.__slcIF.init_client(token)
+        self.__slcIF.initialize(token)
         self.__logger.info(token)
 
     def release_lock(self, key: str):
@@ -56,7 +56,7 @@ class Control():
         except ValueError:
             return False
 
-        self.start_up(decrypted_token)
+        self.start_up(decrypted_token.decode())
 
         return True
 
@@ -82,7 +82,9 @@ class Control():
 
         chn_df = self.get_channelname_list()
         chn_id = chn_df[chn_df["channel_name"] == chn_name]["channel_id"]
-        self.__model.create_datatable(chn_id.to_string(index=False))
+        chn_id = chn_id.to_string(index=False)
+        self.__logger.info(chn_id)
+        self.__model.create_datatable(chn_id)
 
         (res1, mem_data), (res2, his_data) = self.__fetch.execute(chn_id)
 

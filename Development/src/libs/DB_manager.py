@@ -7,6 +7,8 @@ import pandas as pd
 # Self made
 from .abst_db import IDBManager
 
+pd.set_option("display.max_colwidth", None)
+
 
 class DBManager(IDBManager):
     def __new__(cls, *args, **kargs):
@@ -27,8 +29,6 @@ class DBManager(IDBManager):
             sql_text: str,
             values: tuple = None
     ) -> None:
-
-        print(sql_text)
 
         if values is None:
             self.__cursor.execute(sql_text)
@@ -82,7 +82,7 @@ class DBManager(IDBManager):
         else:
             query = f"SELECT {col} FROM {table_name} WHERE {terms}"
 
-        ret = pd.read_sql_query(query, self.__connect)
+        ret = pd.read_sql(query, self.__connect)
 
         return ret
 

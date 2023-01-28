@@ -1,13 +1,12 @@
 # Standard lib
 # Third party
 # Saif made
-from abst_app import BaseAppFunction
-from slack_IF import SlackIF
+from .abst_app import BaseAppFunction
 
 
 class Fetch_Data(BaseAppFunction):
 
-    def __init__(self, slcIF: SlackIF) -> None:
+    def __init__(self, slcIF) -> None:
         super().__init__()
         self.__slcIF = slcIF
 
@@ -41,7 +40,12 @@ class Fetch_Data(BaseAppFunction):
 
         def total_reaction(reactions: list) -> int:
 
-            return sum([item.get["count"] for item in reactions])
+            if reactions is None:
+                ret = 0
+            else:
+                ret = sum([item.get("count") for item in reactions])
+
+            return ret
 
         his_res, his_data = self.__slcIF.get_conversations_history(chn_id)
         # メッセージ以外の投稿を除外

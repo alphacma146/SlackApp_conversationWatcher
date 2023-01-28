@@ -5,6 +5,7 @@ from .abst_slack import ISlackIF
 
 
 class SlackIF(ISlackIF):
+
     def __new__(cls, *args, **kargs):
         if not hasattr(cls, "__instance"):
             cls.__instance = super(SlackIF, cls).__new__(cls)
@@ -15,7 +16,7 @@ class SlackIF(ISlackIF):
         self.__limit = 1000
         self.__client = None
 
-    def init_client(self, token: str):
+    def initialize(self, token: str):
 
         self.__client = WebClient(token)
 
