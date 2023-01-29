@@ -217,6 +217,10 @@ class ChannelSetPopup(BasePopup):
             self.error_pop(self.__msgtex.not_ascii.replace("<>", "ID"))
             return
 
+        if id_text[0].isdecimal():
+            self.error_pop(self.__msgtex.not_ascii.replace("<>", "ID"))
+            return
+
         self.__control.set_channel(id_text, name_text)
 
         return True
@@ -286,15 +290,15 @@ class FetchPopup(BasePopup):
 
     def on_command(self):
 
-        print(len(self.ids.channel_name.text))
-
         if self.ids.channel_name.text == "":
             self.error_pop(self.__msgtex.no_channel)
             return
 
         self.refresh_layout()
         self.__abled_button(False)
-        threading.Thread(target=self.__process).start()
+        th = threading.Thread(target=self.__process)
+        th.start()
+        th.join()
 
     def __process(self):
 
