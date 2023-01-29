@@ -13,6 +13,7 @@ pd.options.display.show_dimensions = True
 
 @dataclass(frozen=True)
 class TableConfig:
+    sqlite_seq: str = "sqlite_sequence"
     token_table: str = "token_meta"
     token_table_cols: dict = field(default_factory=lambda: {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
@@ -67,12 +68,17 @@ class Model():
 
         return self.__db_name
 
-    def get_dbtable(self):
+    def get_dbtable(self) -> list:
 
         ret = self.__DBMngr.get_table_all()
         self.__logger.info(ret)
+        exclude_list = [
+            self.__table_config.sqlite_seq,
+            self.__table_config.token_table,
+            self.__table_config.channel_table
+        ]
 
-        return ret
+        return [it for it in ret if it not in exclude_list]
 
     def insert_token(self, token: str):
 
@@ -90,7 +96,7 @@ class Model():
             self.__table_config.token_table,
             self.__table_config.token_table_cols.keys()
         )
-        self.__logger.info(ret.dtypes)
+        self.__logger.info(ret)
         ret["date"] = pd.to_datetime(ret["date"])
         df = ret.loc[[ret["date"].idxmax()]]
         token = df["token"].to_string(index=False)
@@ -143,3 +149,34 @@ class Model():
     def insert_history(self, chn_id: str, data: dict):
 
         self.__DBMngr.insert(chn_id, data)
+
+    def get_member(self, chn_id: str) -> pd.DataFrame:
+
+        ret = self.__DBMngr.select(
+            chn_id + self.__table_config.user_table,
+            self.__table_config.user_table_cols.keys()
+        )
+        self.__logger.info(ret.head())
+
+        return ret
+
+    def get_history(self, chn_id: str, start=None, end=None) -> pd.DataFrame:
+
+        match (start, end):
+            case (None, None):
+                tern = None
+            case (_, None):
+                tern = f"timestamp >= {start}"
+            case (None, _):
+                tern = f"timestamp <= {end}"
+            case _:
+                tern = f"timestamp BETWEEN {start} AND {end}"
+
+        ret = self.__DBMngr.select(
+            chn_id,
+            self.__table_config.data_table_cols.keys(),
+            tern
+        )
+        self.__logger.info(ret.head())
+
+        return ret

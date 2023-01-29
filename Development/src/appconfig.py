@@ -22,3 +22,5 @@ class MessageText:
     no_text: str = "値を入力してください。"
     not_ascii: str = "<>は半角英数字で入力してください。"
     delete_item: str = "<>は削除されました。"
+    no_channel: str = "チャンネルが選択されていません。"
+    output_complete: str = "出力終了\n<>"

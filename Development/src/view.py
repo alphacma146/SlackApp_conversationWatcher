@@ -2,6 +2,7 @@
 import time
 from pathlib import Path
 import threading
+import re
 # Third party
 from kivy.app import App
 from kivy.core.text import LabelBase, DEFAULT_FONT
@@ -39,6 +40,29 @@ class RootWidget(BoxLayout):
     def update_layout(self):
 
         self.ids.spinner.values = self.__control.get_channelname_list(True)
+        self.ids.information.text = self.make_infotext()
+
+    def make_infotext(self) -> str:
+
+        file_size = self.__control.dbfile_size()
+
+        file_info = (
+            "DataBase SIZE".ljust(23, " ")
+            + f"{file_size} MB"
+        )
+        table_info = "\n"
+        for key, value in self.__control.db_info().items():
+            name = self.__control.convert_channel_name_id(key)
+            table_info += (
+                "\n"
+                + name
+                + "\n"
+                + f"mem:{value[0]} record:{value[1]}".rjust(31, " ")
+            )
+
+        self.ids.progressbar.value = file_size / 16 / 1024
+
+        return file_info + table_info
 
     def __create_popup(self):
 
@@ -51,7 +75,7 @@ class RootWidget(BoxLayout):
         self.__message_pu = Popup(
             title="MESSAGE",
             content=MessagePopup(),
-            size_hint=(0.4, 0.4),
+            size_hint=(0.5, 0.5),
         )
 
         self.__channelset_pu = Popup(
@@ -73,7 +97,8 @@ class RootWidget(BoxLayout):
             content=FetchPopup(
                 self.__control,
                 close_func=lambda: self.__fetch_pu.dismiss(),
-                show_func=self.show_message
+                show_func=self.show_message,
+                update_func=self.update_layout
             ),
             size_hint=(0.9, 0.9),
             auto_dismiss=False
@@ -83,11 +108,14 @@ class RootWidget(BoxLayout):
             title="OUTPUT",
             content=OutputPopup(
                 self.__control,
+                self.__msgtex,
                 self.__exe_path,
+                self.ids.spinner,
                 close_func=lambda: self.__output_pu.dismiss(),
                 show_func=self.show_message
             ),
             size_hint=(0.9, 0.9),
+            auto_dismiss=False
         )
 
     def show_license(self):
@@ -222,11 +250,13 @@ class ChannelSetPopup(BasePopup):
 
 class FetchPopup(BasePopup):
 
-    def __init__(self, control: Control, close_func, show_func):
+    def __init__(self, control: Control, close_func, show_func, update_func):
         super().__init__(close_func, show_func)
         self.__control = control
+        self.update_window = update_func
 
     def close_popup(self):
+        self.update_window()
         self.close()
         self.refresh_layout()
 
@@ -266,19 +296,45 @@ class OutputPopup(BasePopup):
     def __init__(
             self,
             control: Control,
+            message: MessageText,
             exe_path: Path,
+            spinner,
             close_func,
             show_func
     ):
         super().__init__(close_func, show_func)
         self.__control = control
+        self.__msgtex = message
         self.save_path = str(exe_path)
+        self.__spinner = spinner
+
+    def close_popup(self):
+        self.close()
+        self.refresh_layout()
 
     def on_command(self):
-        pass
+
+        target = self.__spinner.text
+        start = self.ids.start_date.text
+        end = self.ids.end_date.text
+        save_path = self.ids.save_directory.text
+        save_path = re.sub("^\\[.{,10}\\]", "", save_path)
+        save_path = re.sub("\\[.{,5}\\]$", "", save_path)
+
+        if target is None:
+            self.error_pop(self.__msgtex.no_channel)
+            return
+
+        self.__control.output_data(save_path, target, start, end)
+        self.error_pop(self.__msgtex.output_complete.replace("<>", target))
 
     def show_filedialog(self):
         pass
+
+    def refresh_layout(self):
+
+        self.ids.start_date.text = ""
+        self.ids.end_date.text = ""
 
 
 class InitPopup(BasePopup):
@@ -321,8 +377,8 @@ class View(App):
 
     def __set_init(self):
         Config.set('graphics', 'fullscreen', '0')
-        Config.set('graphics', 'width', '470')
-        Config.set('graphics', 'height', '320')
+        Config.set('graphics', 'width', '520')
+        Config.set('graphics', 'height', '350')
         resource_add_path('c:/Windows/Fonts')
         LabelBase.register(DEFAULT_FONT, 'msgothic.ttc')
 

@@ -39,9 +39,9 @@ class DBManager(IDBManager):
     def get_table_all(self, ) -> list:
 
         query = "SELECT * FROM sqlite_master WHERE type='table'"
-        self.query_execute(self.__cursor, query)
+        self.query_execute(query)
 
-        return self.__cursor.fetchall()
+        return [name for (_, name, _, _, _) in self.__cursor.fetchall()]
 
     def create_table(
         self,

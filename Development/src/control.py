@@ -1,11 +1,14 @@
 # Standard lib
+import os
 from pathlib import Path
+import time
 # Third party
 from Crypto.Cipher import AES
 # Saif made
 from model import Model
 from libs.slack_IF import SlackIF
 from libs.fetch import Fetch_Data
+from libs.output import Output_Data
 from appconfig import get_logger, MessageText
 
 KEY_TAIL = "TK"
@@ -18,6 +21,7 @@ class Control():
         self.__model = Model(exe_path)
         self.__slcIF = SlackIF()
         self.__fetch = Fetch_Data(self.__slcIF)
+        self.__output = Output_Data(self.__model)
         self.__exe_path = exe_path
         self.__root_path = root_path
 
@@ -28,6 +32,17 @@ class Control():
         path = self.__exe_path / self.__model.get_dbfilename()
 
         return path.exists()
+
+    def dbfile_size(self) -> float:
+
+        if self.isexist_dbfile():
+            ret = os.path.getsize(
+                self.__exe_path / self.__model.get_dbfilename()
+            )
+        else:
+            ret = 0
+
+        return ret / 1024
 
     def start_up(self, token: str = None):
 
@@ -60,6 +75,22 @@ class Control():
 
         return True
 
+    def db_info(self) -> dict:
+
+        table = self.__model.get_dbtable()
+        tb_dict = {}
+        for tb in table:
+            user_tb = [it for it in table if it in tb]
+            if len(user_tb) == 1:
+                tb_dict[tb] = user_tb
+
+        for tb in tb_dict.keys():
+            mem_num = len(self.__model.get_member(tb))
+            data_num = len(self.__model.get_history(tb))
+            tb_dict[tb] = (mem_num, data_num)
+
+        return tb_dict
+
     def get_channelname_list(self, squeeze: bool = False):
 
         ret = self.__model.get_channel()
@@ -80,9 +111,7 @@ class Control():
 
     def fetch_data(self, chn_name: str, progressbar, progress_label):
 
-        chn_df = self.get_channelname_list()
-        chn_id = chn_df[chn_df["channel_name"] == chn_name]["channel_id"]
-        chn_id = chn_id.to_string(index=False)
+        chn_id = self.convert_channel_name_id(chn_name)
         self.__logger.info(chn_id)
         self.__model.create_datatable(chn_id)
 
@@ -92,10 +121,13 @@ class Control():
 
         match (res1, res2):
             case (False, False):
-                return mem_data + "\n" + his_data
+                self.__logger.info("Request Fail")
+                return "\n".join({mem_data, his_data})
             case (False, True):
+                self.__logger.info(f"member_info {res1}")
                 return mem_data
             case (True, False):
+                self.__logger.info(f"conversations_history {res2}")
                 return his_data
 
         for data in mem_data:
@@ -105,3 +137,37 @@ class Control():
             self.__model.insert_history(chn_id, data)
             progress_label.text = f"{i} / {total}"
             progressbar.value = i / total * 100
+
+    def output_data(
+            self,
+            save_path: str,
+            chn_name: str,
+            start: str = None,
+            end: str = None
+    ):
+
+        def convert_timestamp(date: str) -> int:
+
+            try:
+                time_ = time.strptime(date, "%Y/%m/%d")
+                ret = int(time.mktime(time_))
+            except BaseException:
+                ret = None
+
+            return ret
+
+        chn_id = self.convert_channel_name_id(chn_name)
+        start = convert_timestamp(start) if start != "" else None
+        end = convert_timestamp(end) if end != "" else None
+        self.__output.execute(save_path, chn_id, chn_name, start, end)
+
+    def convert_channel_name_id(self, target: str) -> str:
+
+        chn_df = self.get_channelname_list()
+        if target in (sr := chn_df["channel_name"]).to_list():
+            chn_id = chn_df[sr == target]["channel_id"]
+        if target in (sr := chn_df["channel_id"]).to_list():
+            chn_id = chn_df[sr == target]["channel_name"]
+        chn_id = chn_id.to_string(index=False)
+
+        return chn_id

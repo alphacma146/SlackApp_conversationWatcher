@@ -50,13 +50,12 @@
         size_hint: (1, 0.3)
 
         Label:
-            id: text1
+            id: information
             size_hint: (0.5, 1)
             text_size: self.size
             padding: 5,10
-            halign: "center"
+            halign: "left"
             valign: "center"
-            text: "fack you"
 
         TextInput:
             id: log_textbox
@@ -373,7 +372,7 @@
                 line_height: 1
                 font_size: 20
                 multiline: False
-                hint_text: "start"
+                hint_text: "yyyy/mm/dd"
 
             Label:
                 size_hint: (1, 0.1)
@@ -388,7 +387,7 @@
                 line_height: 1
                 font_size: 20
                 multiline: False
-                hint_text: "end"
+                hint_text: "yyyy/mm/dd"
 
             Label:
                 size_hint: (1, 0.03)
@@ -407,7 +406,7 @@
                     size_hint: (0.5, 1)
                     text: "CANCEL"
                     font_size: 20
-                    on_release: root.close()
+                    on_release: root.close_popup()
 
         Label:
             size_hint: (0.2, 1)
