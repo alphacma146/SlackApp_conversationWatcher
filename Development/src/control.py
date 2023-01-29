@@ -42,7 +42,7 @@ class Control():
         else:
             ret = 0
 
-        return ret / 1024
+        return ret / 1024 / 1024
 
     def start_up(self, token: str = None):
 

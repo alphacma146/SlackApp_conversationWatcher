@@ -44,11 +44,12 @@ class RootWidget(BoxLayout):
 
     def make_infotext(self) -> str:
 
-        file_size = self.__control.dbfile_size()
+        file_size = round(self.__control.dbfile_size(), 3)
+        size_text = f"{file_size}".ljust(5, "0")
 
         file_info = (
-            "DataBase SIZE".ljust(23, " ")
-            + f"{file_size} MB"
+            "DataBase SIZE"
+            + f"{size_text} MB".rjust(18, " ")
         )
         table_info = "\n"
 
