@@ -7,8 +7,8 @@ from Crypto.Cipher import AES
 # Saif made
 from model import Model
 from libs.slack_IF import SlackIF
-from libs.fetch import Fetch_Data
-from libs.output import Output_Data
+from component.fetch import Fetch_Data
+from component.output import Output_Data
 from appconfig import get_logger, MessageText
 
 KEY_TAIL = "TK"
