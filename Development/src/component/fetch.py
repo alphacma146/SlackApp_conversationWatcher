@@ -29,6 +29,9 @@ class Fetch_Data(BaseAppFunction):
     def __get_member(self, chn_id: str) -> tuple:
 
         mem_res, mem_data = self.__slcIF.get_members_id(chn_id)
+        if not mem_res:
+            return mem_res, mem_data
+
         mem_info = [
             self.__slcIF.get_member_info(mem_id) for mem_id in mem_data
         ]
@@ -57,6 +60,9 @@ class Fetch_Data(BaseAppFunction):
             return ret
 
         his_res, his_data = self.__slcIF.get_conversations_history(chn_id)
+        if not his_res:
+            return his_res, his_data
+
         # メッセージ以外の投稿を除外
         his_data = [
             data for data in his_data

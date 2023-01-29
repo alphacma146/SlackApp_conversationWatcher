@@ -25,6 +25,9 @@ class Output_Data(BaseAppFunction):
         mem_df = self.__model.get_member(chn_id)
         data_df = self.__model.get_history(chn_id, start, end)
 
+        if len(data_df) == 0:
+            return False
+
         # timestamp=>date
         data_df["date"] = (
             pd.to_datetime(

@@ -24,3 +24,4 @@ class MessageText:
     delete_item: str = "<>は削除されました。"
     no_channel: str = "チャンネルが選択されていません。"
     output_complete: str = "出力終了\n<>"
+    output_none: str = "データがありません。"

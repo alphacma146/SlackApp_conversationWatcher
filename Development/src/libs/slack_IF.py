@@ -25,8 +25,8 @@ class SlackIF(ISlackIF):
 
         try:
             response = func(**kwargs)
-        except BaseException:
-            pass
+        except BaseException as e:
+            response = e.response
 
         return response
 

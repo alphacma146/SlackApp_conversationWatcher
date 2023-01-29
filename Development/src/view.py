@@ -12,6 +12,7 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
+from kivy.clock import mainthread
 # Self made
 from control import Control
 from appconfig import get_logger, MessageText
@@ -125,6 +126,7 @@ class RootWidget(BoxLayout):
     def show_license(self):
         self.__license_pu.open()
 
+    @mainthread
     def show_message(self, text: str):
         self.__message_pu.content.ids.message_text.text = text
         self.__message_pu.open()
@@ -338,8 +340,11 @@ class OutputPopup(BasePopup):
             self.error_pop(self.__msgtex.no_channel)
             return
 
-        self.__control.output_data(save_path, target, start, end)
-        self.error_pop(self.__msgtex.output_complete.replace("<>", target))
+        ret = self.__control.output_data(save_path, target, start, end)
+        if ret:
+            self.error_pop(self.__msgtex.output_complete.replace("<>", target))
+        else:
+            self.error_pop(self.__msgtex.output_none)
 
     def show_filedialog(self):
         pass
