@@ -101,6 +101,7 @@ class RootWidget(BoxLayout):
             title="FETCH",
             content=FetchPopup(
                 self.__control,
+                self.__msgtex,
                 close_func=lambda: self.__fetch_pu.dismiss(),
                 show_func=self.show_message,
                 update_func=self.update_layout
@@ -265,9 +266,17 @@ class ChannelSetPopup(BasePopup):
 
 class FetchPopup(BasePopup):
 
-    def __init__(self, control: Control, close_func, show_func, update_func):
+    def __init__(
+            self,
+            control: Control,
+            message,
+            close_func,
+            show_func,
+            update_func
+    ):
         super().__init__(close_func, show_func)
         self.__control = control
+        self.__msgtex = message
         self.update_window = update_func
 
     def close_popup(self):
@@ -276,6 +285,12 @@ class FetchPopup(BasePopup):
         self.refresh_layout()
 
     def on_command(self):
+
+        print(len(self.ids.channel_name.text))
+
+        if self.ids.channel_name.text == "":
+            self.error_pop(self.__msgtex.no_channel)
+            return
 
         self.refresh_layout()
         self.__abled_button(False)
@@ -328,6 +343,10 @@ class OutputPopup(BasePopup):
         self.refresh_layout()
 
     def on_command(self):
+
+        if self.__spinner.text == "":
+            self.error_pop(self.__msgtex.no_channel)
+            return
 
         target = self.__spinner.text
         start = self.ids.start_date.text
