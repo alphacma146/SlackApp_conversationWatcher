@@ -7,10 +7,14 @@ block_cipher = None
 
 a = Analysis(
     ['launch.py'],
-    pathex=[],
+    pathex=['.'],
     binaries=[],
-    datas=[('view_layout.kv','.'),('LICENSE','.'),('cripto_token.dat','.'),('.','.')],
-    hiddenimports=['win32file', 'win32timezone', '.'],
+    datas=[
+        ('view_layout.kv','.'),
+        ('LICENSE','.'),
+        ('cripto_token.dat','.'),
+    ],
+    hiddenimports=['win32file', 'win32timezone'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -53,5 +57,5 @@ coll = COLLECT(
     *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
     strip=False,
     upx=True,
-    name='launch'
+    name='cash'
 )

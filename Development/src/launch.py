@@ -31,9 +31,9 @@ def get_exe_directory() -> Path:
     if getattr(sys, "frozen", False):
         ret = Path(sys.argv[0])
     else:
-        ret = Path(__file__).parent
+        ret = Path(__file__)
 
-    return ret.absolute()
+    return ret.parent.absolute()
 
 
 if __name__ == "__main__":

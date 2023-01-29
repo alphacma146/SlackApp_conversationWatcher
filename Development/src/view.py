@@ -51,8 +51,11 @@ class RootWidget(BoxLayout):
             + f"{file_size} MB"
         )
         table_info = "\n"
+
         for key, value in self.__control.db_info().items():
             name = self.__control.convert_channel_name_id(key)
+            if name is None:
+                continue
             table_info += (
                 "\n"
                 + name
@@ -228,17 +231,19 @@ class ChannelSetPopup(BasePopup):
         target = self.__spinner.text
 
         if self.ids.remove_switch.active:
-            df = self.__control.get_channelname_list()
-            target_id = df[df["channel_name"] == target]["channel_id"]
-            self.ids.channel_name.text = target
-            self.ids.channel_name.disabled = True
-            self.ids.channel_id.text = target_id.to_string(index=False)
-            self.ids.channel_id.disabled = True
+            if len(target) == 0:
+                self.__abled_button(False)
+            else:
+                df = self.__control.get_channelname_list()
+                target_id = df[df["channel_name"] == target]["channel_id"]
+                self.ids.channel_name.text = target
+                self.ids.channel_name.disabled = True
+                self.ids.channel_id.text = target_id.to_string(index=False)
+                self.ids.channel_id.disabled = True
 
         else:
-            self.ids.channel_name.disabled = False
+            self.__abled_button(True)
             self.ids.channel_name.text = ""
-            self.ids.channel_id.disabled = False
             self.ids.channel_id.text = ""
 
     def refresh_layout(self):
@@ -246,6 +251,13 @@ class ChannelSetPopup(BasePopup):
         self.ids.channel_name.text = ""
         self.ids.channel_id.text = ""
         self.ids.remove_switch.active = False
+
+    def __abled_button(self, able: bool):
+
+        self.ids.ok_button.disabled = not able
+        self.ids.cancel_button.disabled = not able
+        self.ids.channel_name.disabled = not able
+        self.ids.channel_id.disabled = not able
 
 
 class FetchPopup(BasePopup):

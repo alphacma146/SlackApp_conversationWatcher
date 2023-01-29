@@ -21,6 +21,7 @@ class DBManager(IDBManager):
         self.__cursor = None
 
     def initialize(self, db_path: Path) -> Cursor:
+
         self.__connect = sqlite3.connect(db_path, check_same_thread=False)
         self.__cursor = self.__connect.cursor()
 

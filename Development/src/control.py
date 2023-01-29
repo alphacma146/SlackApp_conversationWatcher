@@ -166,8 +166,11 @@ class Control():
         chn_df = self.get_channelname_list()
         if target in (sr := chn_df["channel_name"]).to_list():
             chn_id = chn_df[sr == target]["channel_id"]
-        if target in (sr := chn_df["channel_id"]).to_list():
+        elif target in (sr := chn_df["channel_id"]).to_list():
             chn_id = chn_df[sr == target]["channel_name"]
+        else:
+            return None
+
         chn_id = chn_id.to_string(index=False)
 
         return chn_id
