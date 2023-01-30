@@ -6,13 +6,36 @@ from .abst_app import BaseAppFunction
 
 
 class Fetch_Data(BaseAppFunction):
+    """slackAPIでサーバーから情報を取得する
+    """
 
-    def __init__(self, slcIF) -> None:
+    def __init__(self, slcIF):
+        """constructor
+
+        Parameters
+        ----------
+        slcIF
+        """
         super().__init__()
         self.__slcIF = slcIF
 
     def execute(self, chn_id: str) -> tuple:
+        """実行処理
 
+        Parameters
+        ----------
+        chn_id: str
+            チャンネルID
+
+        Returns
+        ----------
+        tuple
+            (結果bool, 内容)
+
+        Note
+        ----------
+        マルチスレッドでリクエストを投げる
+        """
         with ThreadPoolExecutor(max_workers=4) as executor:
             future = {
                 key: executor.submit(func, chn_id) for (key, func) in {
@@ -27,7 +50,18 @@ class Fetch_Data(BaseAppFunction):
         return mem_res, his_res
 
     def __get_member(self, chn_id: str) -> tuple:
+        """メンバー情報を取得
 
+        Parameters
+        ----------
+        chn_id: str
+            チャンネルID
+
+        Returns
+        ----------
+        tuple
+            (結果bool, 内容)
+        """
         mem_res, mem_data = self.__slcIF.get_members_id(chn_id)
         if not mem_res:
             return mem_res, mem_data
@@ -49,7 +83,18 @@ class Fetch_Data(BaseAppFunction):
         return mem_res, mem_data
 
     def __get_history(self, chn_id: str) -> tuple:
+        """会話ログを取得
 
+        Parameters
+        ----------
+        chn_id: str
+            チャンネルID
+
+        Returns
+        ----------
+        tuple
+            (結果bool, 内容)
+        """
         def total_reaction(reactions: list) -> int:
 
             if reactions is None:

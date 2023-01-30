@@ -13,5 +13,17 @@
             "console": "integratedTerminal",
             "justMyCode": true
         }
+    ],
+
+    "pyinstaller": [
+        {
+            "name": "Python: build",
+            "type": "pyinstaller",
+            "request": "launch",
+            "cwd": "${workspaceFolder}\\nedludd\\Development\\src",
+            "program": "launch.spec",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
     ]
 }

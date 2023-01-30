@@ -6,7 +6,8 @@ from view import View
 
 
 def main():
-
+    """main
+    """
     root_path = get_root()
     exe_path = get_exe_directory()
     version = get_version()
@@ -14,11 +15,33 @@ def main():
 
 
 def get_version() -> str:
+    """app version
+
+    Returns:
+    ----------
+    str
+        Ver. a.b.c.d
+        a: メジャーバージョン
+        b: マイナーバージョン
+        c: ビルドバージョン
+        d: リビジョン
+    """
 
     return "Ver. 0.9.0.0"
 
 
 def get_root() -> Path:
+    """実行ファイルのルートディレクトリパス
+
+    Returns
+    ----------
+    Path
+        Windows path
+
+    Note
+    ----------
+    exeファイルで実行時はtempフォルダの_MEIPASSに展開される
+    """
     if getattr(sys, "frozen", False):
         ret = Path(sys._MEIPASS)
     else:
@@ -28,6 +51,13 @@ def get_root() -> Path:
 
 
 def get_exe_directory() -> Path:
+    """exeファイルのパス
+
+    Returns
+    ----------
+    Path
+        Windows path
+    """
     if getattr(sys, "frozen", False):
         ret = Path(sys.argv[0])
     else:
