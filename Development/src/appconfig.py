@@ -30,20 +30,6 @@ def get_logger(name: str) -> logging.Logger:
     return logger
 
 
-"""constructor
-
-Parameters
-----------
-control: Control,
-version: str,
-    表示するバージョン
-root_path: Path,
-    実行ファイルパス
-exe_path: Path
-    exeファイルパス
-"""
-
-
 @dataclass(frozen=True)
 class MessageText:
     """ポップアップするメッセージを定義する

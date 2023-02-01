@@ -1,5 +1,4 @@
 # Standard lib
-from sqlite3 import Cursor
 import sqlite3
 from pathlib import Path
 # Third party

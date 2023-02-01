@@ -25,5 +25,18 @@
             "console": "integratedTerminal",
             "justMyCode": true
         }
+    ],
+
+    "pytest": [
+        {
+            "name": "Python: test",
+            "type": "pytest",
+            "request": "launch",
+            "cwd": "${workspaceFolder}\\nedludd\\Development\\src",
+            "program": "..\\test",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
     ]
+    // python -m pytest ..\test -W ignore::DeprecationWarning
 }

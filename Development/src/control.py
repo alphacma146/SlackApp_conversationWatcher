@@ -75,10 +75,11 @@ class Control():
         token: str = None
             slack token文字列
         """
-        self.__model.initialize(first=True)
         if token is None:
+            self.__model.initialize()
             token = self.__model.get_token()
         else:
+            self.__model.initialize(first=True)
             self.__model.insert_token(token)
         self.__slcIF.initialize(token)
         self.__logger.info(token)
@@ -101,7 +102,6 @@ class Control():
         bool
             解除成功だとTrue
         """
-
         key = (key * 2 + KEY_TAIL).encode()
         if len(key) != AES.block_size:
             return False
@@ -133,10 +133,11 @@ class Control():
         tb_dict = {}
         for tb in table:
             user_tb = [it for it in table if it in tb]
-            if len(user_tb) == 1:
-                mem_num = len(self.__model.get_member(tb))
-                data_num = len(self.__model.get_history(tb))
-                tb_dict[tb] = (mem_num, data_num)
+            if len(user_tb) != 1:
+                continue
+            mem_num = len(self.__model.get_member(tb))
+            data_num = len(self.__model.get_history(tb))
+            tb_dict[tb] = (mem_num, data_num)
 
         return tb_dict
 
@@ -207,7 +208,6 @@ class Control():
         ----------
         取得エラーだとエラーメッセージを返す
         """
-
         chn_id = self.convert_channel_name_id(chn_name)
         self.__logger.info(chn_id)
         self.__model.create_datatable(chn_id)
@@ -291,7 +291,6 @@ class Control():
         ----------
         変換できなかったらNone
         """
-
         chn_df = self.get_channelname_list()
         if target in (sr := chn_df["channel_name"]).to_list():
             chn_id = chn_df[sr == target]["channel_id"]

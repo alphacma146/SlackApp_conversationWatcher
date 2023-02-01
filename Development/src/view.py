@@ -555,7 +555,8 @@ class OutputPopup(BasePopup):
 
 
 class InitPopup(BasePopup):
-    """初回起動時に表示するポップアップ"""
+    """初回起動時に表示するポップアップ
+    """
 
     def __init__(self, control: Control, close_func, update_func):
         """constructor
