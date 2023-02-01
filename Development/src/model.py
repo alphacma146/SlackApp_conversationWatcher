@@ -66,7 +66,7 @@ class Model():
         self.__table_config = TableConfig()
         self.__logger = get_logger(__name__)
 
-    def initialize(self, first: bool) -> None:
+    def initialize(self, first: bool = False) -> None:
         """初期化の処理
 
         Parameters

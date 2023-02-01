@@ -54,7 +54,7 @@ class Output_Data(BaseAppFunction):
         if len(data_df) == 0:
             return False
 
-        # timestamp=>date
+        # timestamp -> date
         data_df["date"] = (
             pd.to_datetime(
                 data_df["timestamp"].astype(float) * 10**9,

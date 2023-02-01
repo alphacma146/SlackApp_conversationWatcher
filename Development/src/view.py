@@ -1,14 +1,14 @@
 # Standard lib
-import time
 from pathlib import Path
-import threading
 import re
+import time
+import threading
 # Third party
 from kivy.app import App
+from kivy.lang import Builder
+from kivy.config import Config
 from kivy.core.text import LabelBase, DEFAULT_FONT
 from kivy.resources import resource_add_path
-from kivy.config import Config
-from kivy.lang import Builder
 from kivy.properties import StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
@@ -439,7 +439,6 @@ class FetchPopup(BasePopup):
         self.__abled_button(False)
         th = threading.Thread(target=self.__process)
         th.start()
-        th.join()
 
     def __process(self) -> None:
         """ボタン押下時の処理

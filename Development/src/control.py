@@ -272,7 +272,9 @@ class Control():
         chn_id = self.convert_channel_name_id(chn_name)
         start = convert_timestamp(start) if start != "" else None
         end = convert_timestamp(end) if end != "" else None
-        self.__output.execute(save_path, chn_id, chn_name, start, end)
+        ret = self.__output.execute(save_path, chn_id, chn_name, start, end)
+
+        return ret
 
     def convert_channel_name_id(self, target: str) -> str:
         """チャンネルIDと名前を相互変換する
@@ -294,7 +296,7 @@ class Control():
         chn_df = self.get_channelname_list()
         if target in (sr := chn_df["channel_name"]).to_list():
             chn_id = chn_df[sr == target]["channel_id"]
-        elif target in sr.to_list():
+        elif target in (sr := chn_df["channel_id"]).to_list():
             chn_id = chn_df[sr == target]["channel_name"]
         else:
             return None
