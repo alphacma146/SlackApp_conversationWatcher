@@ -25,7 +25,8 @@ class TableConfig:
     token_table_cols: dict = field(default_factory=lambda: {
         "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
         "token": "TEXT NOT NULL",
-        "date": "TEXT"
+        "password": "TEXT NOT NULL",
+        "date": "TEXT NOT NULL"
     })
     channel_table: str = "channel_master"
     channel_table_cols: dict = field(default_factory=lambda: {
@@ -123,7 +124,7 @@ class Model():
 
         return [it for it in ret if it not in exclude_list]
 
-    def insert_token(self, token: str) -> None:
+    def insert_token(self, token: str, key: str = None) -> None:
         """トークンをdbに登録
 
         Parameters
@@ -135,28 +136,30 @@ class Model():
             self.__table_config.token_table,
             {
                 "token": token,
+                "password": key,
                 "date": time.strftime('%Y/%m/%d %H:%M:%S')
             }
         )
 
-    def get_token(self) -> str:
+    def get_token(self) -> list:
         """最新のslack tokenを取得
 
         Returns
         ----------
-        str
-            slack token 文字列
+        list
+            token, key
         """
         ret = self.__DBMngr.select(
             self.__table_config.token_table,
             self.__table_config.token_table_cols.keys()
         )
-        self.__logger.info(ret)
+        print(ret)
         ret["date"] = pd.to_datetime(ret["date"])
-        df = ret.loc[[ret["date"].idxmax()]]
-        token = df["token"].to_string(index=False)
+        df = ret.loc[ret["date"].idxmax()]
+        _, token, password, _ = df.to_list()
+        self.__logger.info((token, password))
 
-        return token
+        return token, password
 
     def insert_channel(self, chn_id: str, name: str) -> None:
         """チャンネルIDとチャンネル名をdbに登録

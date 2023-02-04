@@ -629,23 +629,32 @@ class View(App):
     def on_start(self) -> None:
         """起動直後の処理
         """
-        if not self.__control.isexist_dbfile():
-            self.__logger.info("isexist_dbfile FALSE")
-            init_pu = Popup(
-                title="First StartUp!",
+        def create_pop(title: str) -> Popup:
+            pu = Popup(
+                title=title,
                 content=InitPopup(
                     self.__control,
-                    close_func=lambda: init_pu.dismiss(),
+                    close_func=lambda: pu.dismiss(),
                     update_func=self.__widget.update_layout
                 ),
                 size_hint=(0.6, 0.6),
                 auto_dismiss=False
             )
+            return pu
+
+        if not self.__control.isexist_dbfile():
+            self.__logger.info("isexist_dbfile FALSE")
+            init_pu = create_pop("First StartUp!")
             init_pu.open()
         else:
             self.__logger.info("isexist_dbfile TRUE")
-            self.__control.start_up()
-            self.__widget.update_layout()
+            ret = self.__control.start_up()
+            if not ret:
+                self.__logger.info("Crypto file modify")
+                init_pu = create_pop("Set new token")
+                init_pu.open()
+            else:
+                self.__widget.update_layout()
 
     def on_stop(self) -> None:
         """終了時の処理

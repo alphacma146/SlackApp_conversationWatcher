@@ -10,6 +10,7 @@ from model import Model
 from libs.slack_if import SlackIF
 from component.fetch import FetchData
 from component.output import OutputData
+from component.decipher import Decipher
 from appconfig import get_logger
 
 KEY_TAIL = "TK"
@@ -24,17 +25,18 @@ class Control():
 
         Parameters
         ----------
-        root_path: Path,
+        root_path: Path
             実行ファイルパス
         exe_path: Path
             exeファイルパス
         """
+        self.__exe_path = exe_path
+        self.__root_path = root_path
         self.__model = Model(exe_path)
         self.__slcIF = SlackIF()
         self.__fetch = FetchData(self.__slcIF)
         self.__output = OutputData(self.__model)
-        self.__exe_path = exe_path
-        self.__root_path = root_path
+        self.__decipher = Decipher(self.__root_path / "cripto_token.dat")
 
         self.__logger = get_logger(__name__)
 
@@ -67,22 +69,41 @@ class Control():
 
         return ret / 1024 / 1024
 
-    def start_up(self, token: str = None) -> None:
+    def start_up(self, token: str = None, key: str = None) -> None:
         """起動時の処理
 
         Parameters
         ----------
         token: str = None
             slack token文字列
+        key: str = None
+            解読キー文字列
         """
-        if token is None:
-            self.__model.initialize()
-            token = self.__model.get_token()
-        else:
-            self.__model.initialize(first=True)
-            self.__model.insert_token(token)
+        match (token, key):
+            # 通常起動
+            case (None, None):
+                self.__model.initialize()
+                db_token, key = self.__model.get_token()
+                ret, decrypted_token = self.__decipher.execute(key)
+                # cryptoキーが変わった
+                if not ret:
+                    return False
+                # ファイルの中身が違う
+                elif db_token != decrypted_token:
+                    self.__model.insert_token(decrypted_token, key)
+                    token = decrypted_token
+                # 起動成功
+                else:
+                    token = db_token
+            # 初回起動
+            case (_, _):
+                self.__model.initialize(first=True)
+                self.__model.insert_token(token, key)
+
         self.__slcIF.initialize(token)
         self.__logger.info(token)
+
+        return True
 
     def close_window(self) -> None:
         """終了時の処理
@@ -102,22 +123,12 @@ class Control():
         bool
             解除成功だとTrue
         """
-        key = (key * 2 + KEY_TAIL).encode()
-        if len(key) != AES.block_size:
+        ret, decrypted_token = self.__decipher.execute(key)
+
+        if not ret:
             return False
 
-        with open(self.__root_path / "cripto_token.dat", "rb") as f:
-            nonce, tag, ciphertext = [f.read(x) for x in (
-                AES.block_size, AES.block_size, -1
-            )]
-
-        cipher = AES.new(key, AES.MODE_EAX, nonce)
-        try:
-            decrypted_token = cipher.decrypt_and_verify(ciphertext, tag)
-        except ValueError:
-            return False
-
-        self.start_up(decrypted_token.decode())
+        self.start_up(decrypted_token, key)
 
         return True
 
