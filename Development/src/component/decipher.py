@@ -36,7 +36,7 @@ class Decipher(BaseAppFunction):
             解除成功だとTrue, 解読文字列
             解除成功だとFalse, None
         """
-        key = (key * 2 + KEY_TAIL).encode()
+        key = (str(key) * 2 + KEY_TAIL).encode()
         if len(key) != AES.block_size:
             return False, None
 
@@ -68,8 +68,8 @@ class Decipher(BaseAppFunction):
         bool
             暗号化できたらTrue
         """
-        key = (key * 2 + KEY_TAIL).encode()
-        if len(key) != AES.block_size:
+        key = (str(key) * 2 + KEY_TAIL).encode()
+        if len(key) != AES.block_size or len(target_text) == 0:
             return False
 
         cipher = AES.new(key, AES.MODE_EAX)

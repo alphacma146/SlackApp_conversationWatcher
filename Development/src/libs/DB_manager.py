@@ -113,20 +113,20 @@ class DBManager(IDBManager):
         """
         col = ", ".join(data.keys())
         sac = ", ".join(["?"] * len(data))
-        query1 = f"REPLACE INTO {table_name}({col}) values({sac})"
-        self.query_execute(query1, values=tuple(data.values()))
+        query = f"REPLACE INTO {table_name}({col}) values({sac})"
+        self.query_execute(query, values=tuple(data.values()))
 
-    def delete(self, table_name: str, data: str, value: str) -> None:
+    def delete(self, table_name: str, primary_key: str, value: str) -> None:
         """データを消す
 
         Parameters
         ----------
-        data: str
+        primary_key: str
             キー
-        data: str
+        value: str
             消すデータ
         """
-        query = f"DELETE FROM {table_name} WHERE {data} = ?"
+        query = f"DELETE FROM {table_name} WHERE {primary_key} = ?"
         self.query_execute(query, values=(value,))
 
     def select(

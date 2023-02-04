@@ -109,7 +109,6 @@ class SlackIF(ISlackIF):
         tuple
             (結果bool, 内容)
         """
-
         res = self.request(
             self.__client.users_info,
             {"user": member_id}
