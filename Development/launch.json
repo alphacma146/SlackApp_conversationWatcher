@@ -38,5 +38,5 @@
             "justMyCode": true
         }
     ]
-    // python -m pytest ..\test -W ignore::DeprecationWarning
+    // python -m pytest ..\test
 }
