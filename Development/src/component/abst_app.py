@@ -33,3 +33,8 @@ class BaseAppFunction(IAppFunction):
         """初期化
         """
         pass
+
+    def execute(self) -> None:
+        """機能実行
+        """
+        pass

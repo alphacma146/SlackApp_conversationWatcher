@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from .abst_app import BaseAppFunction
 
 
-class Fetch_Data(BaseAppFunction):
+class FetchData(BaseAppFunction):
     """slackAPIでサーバーから情報を取得する
     """
 

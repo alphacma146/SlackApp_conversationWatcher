@@ -7,7 +7,7 @@ import pandas as pd
 from .abst_app import BaseAppFunction
 
 
-class Output_Data(BaseAppFunction):
+class OutputData(BaseAppFunction):
     """DataFrameをcsvで吐き出す
     """
 

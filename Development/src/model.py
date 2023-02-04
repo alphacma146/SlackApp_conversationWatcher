@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 # Third party
 import pandas as pd
 # Saif made
-from libs.DB_manager import DBManager
+from libs.db_manager import DBManager
 from appconfig import get_logger
 
 pd.options.display.show_dimensions = True

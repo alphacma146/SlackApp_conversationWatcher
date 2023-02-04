@@ -7,9 +7,9 @@ from Crypto.Cipher import AES
 import pandas as pd
 # Saif made
 from model import Model
-from libs.slack_IF import SlackIF
-from component.fetch import Fetch_Data
-from component.output import Output_Data
+from libs.slack_if import SlackIF
+from component.fetch import FetchData
+from component.output import OutputData
 from appconfig import get_logger
 
 KEY_TAIL = "TK"
@@ -31,8 +31,8 @@ class Control():
         """
         self.__model = Model(exe_path)
         self.__slcIF = SlackIF()
-        self.__fetch = Fetch_Data(self.__slcIF)
-        self.__output = Output_Data(self.__model)
+        self.__fetch = FetchData(self.__slcIF)
+        self.__output = OutputData(self.__model)
         self.__exe_path = exe_path
         self.__root_path = root_path
 
