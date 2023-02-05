@@ -1,9 +1,8 @@
 # Standard lib
 import os
 from pathlib import Path
-import time
+from datetime import datetime
 # Third party
-from Crypto.Cipher import AES
 import pandas as pd
 # Saif made
 from model import Model
@@ -12,8 +11,6 @@ from component.fetch import FetchData
 from component.output import OutputData
 from component.decipher import Decipher
 from appconfig import get_logger
-
-KEY_TAIL = "TK"
 
 
 class Control():
@@ -31,12 +28,11 @@ class Control():
             exeファイルパス
         """
         self.__exe_path = exe_path
-        self.__root_path = root_path
         self.__model = Model(exe_path)
         self.__slcIF = SlackIF()
         self.__fetch = FetchData(self.__slcIF)
         self.__output = OutputData(self.__model)
-        self.__decipher = Decipher(self.__root_path / "cripto_token.dat")
+        self.__decipher = Decipher(root_path / "cripto_token.dat")
 
         self.__logger = get_logger(__name__)
 
@@ -95,9 +91,9 @@ class Control():
                 # 起動成功
                 else:
                     token = db_token
-            # 初回起動
+            # 初回起動 or tokenファイル変更
             case (_, _):
-                self.__model.initialize(first=True)
+                self.__model.initialize(first=not self.isexist_dbfile())
                 self.__model.insert_token(token, key)
 
         self.__slcIF.initialize(token)
@@ -224,8 +220,6 @@ class Control():
         self.__model.create_datatable(chn_id)
 
         (res1, mem_data), (res2, his_data) = self.__fetch.execute(chn_id)
-        total = len(his_data)
-        progress_label.text = f"0 / {total}"
 
         match (res1, res2):
             case (False, False):
@@ -237,6 +231,9 @@ class Control():
             case (True, False):
                 self.__logger.info(f"conversations_history {res2}")
                 return his_data
+
+        total = len(his_data)
+        progress_label.text = f"0 / {total}"
 
         for data in mem_data:
             self.__model.insert_member(chn_id, data)
@@ -273,8 +270,8 @@ class Control():
         def convert_timestamp(date: str) -> int:
 
             try:
-                time_ = time.strptime(date, "%Y/%m/%d")
-                ret = int(time.mktime(time_))
+                time_ = datetime.strptime(date, "%Y/%m/%d")
+                ret = int(datetime.timestamp(time_))
             except BaseException:
                 ret = None
 

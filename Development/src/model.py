@@ -1,5 +1,5 @@
 # Standard lib
-import time
+from datetime import datetime
 from pathlib import Path
 from dataclasses import dataclass, field
 # Third party
@@ -124,20 +124,22 @@ class Model():
 
         return [it for it in ret if it not in exclude_list]
 
-    def insert_token(self, token: str, key: str = None) -> None:
+    def insert_token(self, token: str, password: str) -> None:
         """トークンをdbに登録
 
         Parameters
         ----------
         token: str
             slack token 文字列
+        password: str
+            解読キー
         """
         self.__DBMngr.insert(
             self.__table_config.token_table,
             {
                 "token": token,
-                "password": key,
-                "date": time.strftime('%Y/%m/%d %H:%M:%S')
+                "password": password,
+                "date": datetime.now().strftime("%Y/%m/%d %H:%M:%S.%f")
             }
         )
 
@@ -153,7 +155,6 @@ class Model():
             self.__table_config.token_table,
             self.__table_config.token_table_cols.keys()
         )
-        print(ret)
         ret["date"] = pd.to_datetime(ret["date"])
         df = ret.loc[ret["date"].idxmax()]
         _, token, password, _ = df.to_list()

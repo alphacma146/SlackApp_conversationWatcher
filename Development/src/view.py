@@ -651,8 +651,8 @@ class View(App):
             ret = self.__control.start_up()
             if not ret:
                 self.__logger.info("Crypto file modify")
-                init_pu = create_pop("Set new token")
-                init_pu.open()
+                set_pu = create_pop("Set new token")
+                set_pu.open()
             else:
                 self.__widget.update_layout()
 
