@@ -27,7 +27,7 @@ def get_version() -> str:
         d: リビジョン
     """
 
-    return "Ver. 0.9.0.0"
+    return "Ver. 1.0.0.0"
 
 
 def get_root() -> Path:
