@@ -44,7 +44,7 @@ class TableConfig:
         "user_id": "TEXT NOT NULL",
         "timestamp": "TEXT NOT NULL",
         "text": "TEXT NOT NULL",
-        "reaction": "INT"
+        "reaction": "INTEGER"
     })
 
 
