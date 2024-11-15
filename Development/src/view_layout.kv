@@ -1,0 +1,414 @@
+#:kivy 2.1.0
+<RootWidget>:
+    orientation: "vertical"
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint: (1, 0.1)
+
+        Label:
+            size_hint: (0.8, 1)
+
+        Label:
+            id: ver_label
+            size_hint: (0.2, 1)
+            text_size: self.size
+            padding: 5,10
+            halign: "right"
+            valign: "top"
+            text: "[ref=None]"+root.ver_text+"[/ref]"
+            markup: True
+            on_ref_press: root.show_license()
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint: (1, 0.2)
+
+        Spinner:
+            id: spinner
+            size_hint: (0.77, 1)
+            text: "Select Channel"
+            font_size: 32
+            text_autoupdate: True
+            values: ""
+
+        Button:
+            id: channelset_button
+            size_hint: (0.23, 1)
+            text: "SET CHANNEL"
+            font_size: 18
+            on_press: root.show_channelset()
+
+    ProgressBar:
+        id: progressbar
+        size_hint: (1, 0.05)
+        max: 100
+        value: 50
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint: (1, 0.33)
+
+        Label:
+            id: information
+            size_hint: (0.5, 1)
+            text_size: self.size
+            padding: 5,10
+            halign: "left"
+            valign: "center"
+
+        TextInput:
+            id: log_textbox
+            size_hint: (0.5, 1)
+            line_height: 1
+            multiline: False
+            hint_text: 'input'
+
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint: (1, 0.3)
+
+        Button:
+            id: fetch_button
+            size_hint: (0.5, 1)
+            text: "FETCH"
+            font_size: 37
+            on_press: root.show_fetch()
+
+        Button:
+            id: output_button
+            size_hint: (0.5, 1)
+            text: "OUTPUT"
+            font_size: 37
+            on_press: root.show_output()
+
+    Label:
+        size_hint: (1, 0.02)
+
+<InitPopup>:
+    BoxLayout:
+        orientation: "horizontal"
+
+        Label:
+            size_hint: (0.2, 1)
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: (0.8, 1)
+
+            Label:
+                size_hint: (1, 0.2)
+                text_size: self.size
+                padding: 5, 2
+                font_size: 18
+                halign: "center"
+                valign: "bottom"
+                text: "PASSWORD"
+
+            Label:
+                id: result_message
+                size_hint: (1, 0.2)
+                text_size: self.size
+                padding: 5, 2
+                color: 1,0,0,1
+                font_size: 18
+                halign: "center"
+                valign: "bottom"
+                text: ""
+
+            TextInput:
+                id: key_input
+                size_hint: (1, 0.25)
+                line_height: 1
+                font_size: 20
+                multiline: False
+                password: True
+                hint_text: ""
+
+            Label:
+                size_hint: (1, 0.05)
+
+            Button:
+                size_hint: (1, 0.25)
+                text: "OK"
+                font_size: 20
+                on_release: root.on_command()
+
+            Label:
+                size_hint: (1, 0.05)
+
+        Label:
+            size_hint: (0.2, 1)
+
+<LicensePopup>:
+    BoxLayout:
+        orientation: "vertical"
+
+        Label:
+            id: license_text
+            size_hint: (1, 1)
+            text_size: self.size
+            font_size: 9
+
+<MessagePopup>:
+    BoxLayout:
+        orientation: "horizontal"
+
+        Label:
+            size_hint: (0.075, 1)
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: (0.85, 1)
+
+            Label:
+                id: message_text
+                size_hint: (1, 1)
+                text_size: self.size
+                halign: "left"
+                valign: "center"
+                font_size: 18
+                text: "fackyou\nfachhh"
+                markup: True
+
+        Label:
+            size_hint: (0.075, 1)
+
+
+<ChannelSetPopup>:
+    BoxLayout:
+        orientation: "horizontal"
+
+        Label:
+            size_hint: (0.2, 1)
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: (0.8, 1)
+
+            Label:
+                size_hint: (1, 0.02)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: (1, 0.1)
+
+                Label:
+                    size_hint: (0.5, 1)
+
+                Switch:
+                    id: remove_switch
+                    active: False
+                    size_hint: (0.28, 1)
+                    font_size: 32
+                    text: "REMOVE"
+                    on_active: root.switch_click()
+
+                Label:
+                    size_hint: (0.22, 1)
+                    text: "REMOVE"
+
+            Label:
+                size_hint: (1, 0.15)
+                text_size: self.size
+                padding: 5, 2
+                font_size: 18
+                halign: "left"
+                valign: "bottom"
+                text: "Channel名"
+
+            TextInput:
+                id: channel_name
+                size_hint: (1, 0.15)
+                line_height: 1
+                multiline: False
+                disabled_foreground_color: 1, 0, 0, 1
+                font_size: 20
+                hint_text: "name"
+
+            Label:
+                size_hint: (1, 0.15)
+                text_size: self.size
+                padding: 5, 2
+                font_size: 18
+                halign: "left"
+                valign: "bottom"
+                text: "ChannelID"
+
+            TextInput:
+                id: channel_id
+                size_hint: (1, 0.15)
+                line_height: 1
+                multiline: False
+                disabled_foreground_color: 1, 0, 0, 1
+                font_size: 20
+                hint_text: "ID"
+
+            Label:
+                size_hint: (1, 0.08)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: (1, 0.2)
+
+                Button:
+                    id: ok_button
+                    size_hint: (0.5, 1)
+                    text: "OK"
+                    font_size: 20
+                    on_release: root.on_command()
+
+                Button:
+                    id: cancel_button
+                    size_hint: (0.5, 1)
+                    text: "CANCEL"
+                    font_size: 20
+                    on_release: root.close_popup()
+
+        Label:
+            size_hint: (0.2, 1)
+
+
+<FetchPopup>:
+    BoxLayout:
+        orientation: "horizontal"
+
+        Label:
+            size_hint: (0.2, 1)
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: (0.8, 1)
+
+            Label:
+                size_hint: (1, 0.15)
+
+            Label:
+                id: channel_name
+                size_hint: (1, 0.15)
+                text_size: self.size
+                padding: 5, 2
+                font_size: 18
+                halign: "left"
+                valign: "bottom"
+                text: "ChannelName"
+
+            ProgressBar:
+                id: progressbar
+                size_hint: (1, 0.2)
+                max: 100
+                value: 0
+
+            Label:
+                id: progress_label
+                size_hint: (1, 0.15)
+                text_size: self.size
+                padding: 5, 2
+                font_size: 18
+                halign: "right"
+                valign: "bottom"
+                text: "xxxx / xxxx"
+
+            Label:
+                size_hint: (1, 0.15)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: (1, 0.2)
+
+                Button:
+                    id: ok_button
+                    size_hint: (0.5, 1)
+                    text: "OK"
+                    font_size: 20
+                    on_release: root.on_command()
+
+                Button:
+                    id: cancel_button
+                    size_hint: (0.5, 1)
+                    text: "CANCEL"
+                    font_size: 20
+                    on_release: root.close_popup()
+
+        Label:
+            size_hint: (0.2, 1)
+
+<OutputPopup>:
+    BoxLayout:
+        orientation: "horizontal"
+
+        Label:
+            size_hint: (0.2, 1)
+
+        BoxLayout:
+            orientation: "vertical"
+            size_hint: (0.8, 1)
+
+            Label:
+                id: save_directory
+                size_hint: (1, 0.25)
+                text_size: self.size
+                color: (1,0,1,1)
+                padding: 5, 2
+                halign: "left"
+                valign: "center"
+                text: "[ref=None]"+root.save_path+"[/ref]"
+                markup: True
+                on_ref_press: root.show_filedialog()
+
+            Label:
+                size_hint: (1, 0.03)
+
+            Label:
+                size_hint: (1, 0.1)
+                text_size: self.size
+                padding: 5, 2
+                font_size: 18
+                halign: "left"
+                valign: "bottom"
+                text: "BETWEEN"
+
+            TextInput:
+                id: start_date
+                size_hint: (1, 0.15)
+                line_height: 1
+                font_size: 20
+                multiline: False
+                hint_text: "yyyy/mm/dd"
+
+            Label:
+                size_hint: (1, 0.1)
+                text_size: self.size
+                font_size: 18
+                padding: 5, 2
+                text: "AND"
+
+            TextInput:
+                id: end_date
+                size_hint: (1, 0.15)
+                line_height: 1
+                font_size: 20
+                multiline: False
+                hint_text: "yyyy/mm/dd"
+
+            Label:
+                size_hint: (1, 0.03)
+
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint: (1, 0.2)
+
+                Button:
+                    size_hint: (0.5, 1)
+                    text: "OK"
+                    font_size: 20
+                    on_release: root.on_command()
+
+                Button:
+                    size_hint: (0.5, 1)
+                    text: "CANCEL"
+                    font_size: 20
+                    on_release: root.close_popup()
+
+        Label:
+            size_hint: (0.2, 1)

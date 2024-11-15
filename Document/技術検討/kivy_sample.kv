@@ -1,0 +1,25 @@
+#:kivy 2.1.0
+<TextWidget>:
+
+    TextInput:
+        id: text1
+        size: 200, 30
+        pos: 50, 70
+        line_height: 1
+        multiline: False
+        hint_text: 'input'
+
+    Label:
+        id: label1
+        size: 300,50
+        pos: 0,100
+        font_size: 18
+        text: root.text
+
+    Button:
+        id: button1
+        size: 100,40
+        pos: 100,10
+        text: "O K"
+        font_size: 18
+        on_press: root.on_command()
